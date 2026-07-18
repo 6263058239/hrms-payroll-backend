@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Kodekrafters HRMS</title>
+    <!-- FontAwesome Connection Icons ke liye -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <style>
+      :root {
+        --bg-main: #f8fafc;        /* Ultra clean slate background */
+    --sidebar-bg: #0f172a;     /* Deep dark corporate navy */
+    --sidebar-hover: #1e293b;  /* Sleek gray-blue hover state */
+    --text-main: #334155;      /* Charcoal text for better readability */
+    --text-muted: #64748b;     /* Slate gray for secondary text */
+    --border-color: #e2e8f0;   /* Thin premium border tint */
+    --accent-blue: #0066cc;    /* Professional link/button blue */
+    --accent-green: #10b981;   /* Fresh green for profit metrics */
+    --accent-red: #ef4444;     /* Warning red for overdue elements */
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      }
+      body {
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        min-height: 100vh;
+      }
+      .dashboard-container{
+        display: flex;
+        min-height: 100vh;
+      }
+      /* --- 1. Premium Sidebar Design --- */
+      .sidebar {
+        width: 260px;
+        background-color: var(--sidebar-bg);
+        color: #94a3b8;
+        display: flex;
+        flex-direction: column;
+        padding: 24px 16px;
+        position: fixed;
+        height: 100vh;
+        z-index: 10;
+      }
+      .brand-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 32px;
+        padding-left: 8px;
+      }
+      .brand-logo i {
+        color: #38bdf8;
+      }
+      .nav-menu{
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        overflow-y: auto;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 14px;
+        color: #94a3b8;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+      .nav-link:hover, .nav-link.active {
+        background-color: var(--sidebar-hover);
+        color: #fff;
+      }
+      .nav-link.active i {
+        color: #38bdf8;
+      }
+      /* --- 2. Main Layout Engine --- */
+      .main-content {
+        flex: 1;
+        margin-left: 260px;
+        padding: 32px 40px;
+      }
+      .main-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 24px;
+      }
+      .org-name {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 16px;
+      }
+      .org-info i {
+        color: var(--accent-blue);
+        margin-right: 6px;
+      }
+      .user-action-zone {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .search-box {
+        position: absolute;
+        left: 12px;
+        align-items: center;
+      }
+      .search-box i {
+        position: absolute;
+        left: 12px;
+        color: var(--text-muted);
+      }
+      .search-box input{
+        padding: 8px 12px 8px 36px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        width: 240px;
+        outline: none;
+        font-size: 14px;
+      }
+      .notification-bell {
+        font-size: 20px;
+        color: var(--text-muted);
+        cursor: pointer;
+      }
+      .profile-badge {
+        width: 36px;
+        height: 36px;
+        background-color: #cbd5e1;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #334155;
+        cursor: pointer;
+      }
+      /* Welcome Ribbon */
+      .welcome-strip {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .welcome-strip h2{
+        font-size: 24px;
+        color: #0f172a;
+      }
+      .dynamic-highlight {
+       color: var(--accent-blue); 
+      }
+      .update-badge{
+        padding: 4px 12px;
+        background-color: #e0f2fe;
+        color: #0369a1;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      /* Generic Panel Box Container */
+      .data-panel, .dashboard-section {
+        background: #fff;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+
+      }
+      .panel-header, .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 12px;
+      }
+      .panel-header h3, .section-header h3 {
+        font-size: 16px;
+        color: #0f172a;
+        font-weight: 600;
+      }
+      /* --- Section 1: Total Receivables Breakdowns --- */
+      .receivable-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 16px;
+      }
+      .receivable-block {
+        padding: 16px;
+        border-right: 1px solid var(--border-color);
+      }
+      .receivable-block:last-child {
+        border-right: none;
+      }
+      .block-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+      }
+      .block-val {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .receivable-block.overdue-critical .block-val {
+        color: var(--accent-red);
+      }
+      .dashboard-two-column {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+      .dashboard-two-column.gap-layout {
+        grid-template-columns: 1fr 1fr;
+      }
+      /* Sales Graphic Dummy Bar Simulation */
+      .dummy-chart-graphic {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        height: 140px;
+        padding-top: 20px;
+      }
+      .bar {
+        width: 30px;
+        border-radius: 4px 4px 0 0;
+      }
+      .bar-blue { background-color: #38bdf8;}
+      .bar-green { background-color: var(--accent-green);}
+      /* Right Calculation Board Container Styling */
+      .summary-panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
+      }
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .summary-row.border-top {
+        border-top: 1px dashed var(--border-color);
+        padding-top: 14px;
+      }
+      .summary-label {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .summary-value {
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .text-blue { color: var(--accent-blue);}
+      .text-green { color: var(--accent-green);}
+      .text-red { color: var(--accent-red);}
+      /* Empty State Message Boxes for Projects */
+      .empty-state-msg {
+        text-align: center;
+        padding: 40px 0;
+        color: var(--text-muted);
+        font-size: 14px;
+      }
+      .action-link {
+        color: var(--accent-blue);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      /* --- Section 4: Pure Clean Dynamic Data Table Matrix --- */
+      .table-responsive-wrapper {
+        overflow-x: auto;
+      }
+      .matrix-data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 14px;
+      }
+      .matrix-data-table th{
+        background-color: #f8fafc;
+        color: var(--text-muted);
+        font-weight: 600;
+        padding: 14px 16px;
+        border-bottom: 2px solid var(--border-color);
+      }
+      .matrix-data-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border-color);
+        color: #334155;
+      }
+      .matrix-data-table tbody tr:hover{
+        background-color: #f1f5f9;
+      }
+      .time-filter {
+        font-size: 12px;
+        color: var(--accent-blue);
+        cursor: pointer;
+        font-weight: 600;
+      }
+     </style>
+</head>
+<body>
+     <div class="dashboard-container">
+     <!-- 1. SIDEBAR NAVIGATION (Zoho ke saare modules ke logic ke sath-->
+     <aside class="sidebar">
+        <div class="brand-logo">
+           <i class="fa-solid fa-layer-group"></i>
+           <span>KodeKrafters</span>
+        </div>
+         <nav class="nav-menu">
+             <a href="#" class="nav-link active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-user-group"></i> Customers</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-boxes-stacked"></i> Items</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-file-invoice-dollar"></i> Invoices</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-credit-card"></i> Payments Received</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-truck-ramp-box"></i> Delivery Chalan</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-hand-holding-dollar"></i> Expenses</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-business-time"></i> Time Tracking</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-percent"></i> GST Filing</a>
+             <a href="#" class="nav-link"><i class="fa-solid fa-square-poll-vertical"></i> Reports</a>
+             <a href="login.html" class="nav-link"><i class="fa-solid fa-sliders"></i> Settings</a>
+         </nav>
+
+     </aside>
+     <!-- 2. MAIN CONTENT AREA -->
+      <main class="main-content">
+          <!-- TOP BAR / HEADER -->
+           <header class="main-header">
+              <div class="org-info">
+                <i class="fa-solid fa-building-user"></i>
+                <span class="org-name">KodeKrafters Software & Technology Consulting LLP</span>
+              </div>
+              <div class="user-action-zone">
+                 <div class="search-box">
+                   <i class="fa-solid fa-magnifying-glass"></i>
+                     <input type="text" placeholder="Search in Customers...">
+                 </div>
+                 <div class="notification-bell"><i class="fa-regular fa-bell"></i></div>
+                  <div class="profile-badge"><i class="fa-solid fa-user-shield"></i></div>
+              </div>
+           </header>
+           <!-- Welcome Strip -->
+            <div class="welcome-strip">
+            <h2>Hello, <span class="dynamic-highlight">Sir</span> 👋</h2>
+            <span class="update-badge">Recent Updates</span>
+            </div>
+            <!-- SECTION 1: TOTAL RECEIVABLES (Exact breakdown block from screenshot) -->
+            <section class="dashboard-section section-receivables">
+               <div class="section-header">
+                 <h3>Total Receivable</h3>
+                 <span class="text-muted">Total Receivable: ₹49,57,455.00</span>
+               </div>
+               <div class="receivable-grid">
+                <div class="receivable-block current">
+                     <span class="block-label">CURRENT</span>
+                     <h4 class="block-val">₹0.00</h4>
+                </div>
+                  <div class="receivable-block overdue">
+                        <span class="block-label">OVERDUE (1-15 DAYS)</span>
+                        <h4 class="block-val">₹0.00</h4>
+                  </div>
+                  <div class="receivable-block overdue">
+                        <span class="block-label">OVERDUE (16-30 DAYS)</span>
+                        <h4 class="block-val">₹0.00</h4>
+                   </div>
+                   <div class="receivable-block overdue">
+                        <span class="block-label">OVERDUE (31-45 DAYS)</span>
+                        <h4 class="block-val">₹0.00</h4>
+                    </div>
+                    <div class="receivable-block overdue-critical">
+                        <span class="block-label">ABOVE 45 DAYS</span>
+                        <h4 class="block-val">₹49,57,455.00</h4>
+                    </div>
+               </div>
+            </section>
+            <!-- SECTION 2: SALES AND EXPENSES (With Right Side Calculation Box) -->
+            <section class="dashboard-two-column">
+                <!-- Chart Box Context Placeholder -->
+                <div class="data-panel chart-panel">
+                    <div class="panel-header">
+                        <h3>Sales and Expenses</h3>
+                        <span class="time-filter">Previous Fiscal Year <i class="fa-solid fa-angle-down"></i></span>
+                    </div>
+                    <!-- Graphic Chart representation block -->
+                    <div class="dummy-chart-graphic">
+                        <div class="bar bar-blue" style="height: 60%;"></div>
+                        <div class="bar bar-green" style="height: 80%;"></div>
+                        <div class="bar bar-blue" style="height: 40%;"></div>
+                    </div>
+                </div>
+
+                <!-- Right Calculation Summary Sheet -->
+                <div class="data-panel summary-panel">
+                    <div class="summary-row">
+                        <span class="summary-label">Total Sales</span>
+                        <h4 class="summary-value text-blue">₹48,29,415.00</h4>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Total Receipts</span>
+                        <h4 class="summary-value text-green">₹9,48,240.00</h4>
+                    </div>
+                    <div class="summary-row border-top">
+                        <span class="summary-label">Total Expenses</span>
+                        <h4 class="summary-value text-red">₹0.00</h4>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: PROJECTS & TOP EXPENSES DUAL WIDGETS -->
+            <section class="dashboard-two-column gap-layout">
+                <div class="data-panel project-panel">
+                    <div class="panel-header">
+                        <h3>Projects</h3>
+                        <a href="#" class="action-link"><i class="fa-solid fa-plus"></i> New</a>
+                    </div>
+                    <div class="empty-state-msg">
+                        <p>Add Project(s) to this website</p>
+                    </div>
+                </div>
+
+                <div class="data-panel expenses-panel">
+                    <div class="panel-header">
+                        <h3>Top Expenses</h3>
+                        <span class="time-filter">This Fiscal Year <i class="fa-solid fa-angle-down"></i></span>
+                    </div>
+                    <div class="empty-state-msg">
+                        <p>No Expense recorded for this fiscal year</p>
+                    </div>
+                </div>
+            </section>
+           <!-- SECTION 4: DETAILED SALES, RECEIPTS AND DUES MATRIX TABLE -->
+            <section class="dashboard-section matrix-table-section">
+                <div class="panel-header">
+                    <h3>Sales, Receipts, and Dues Summary</h3>
+                </div>
+                <div class="table-responsive-wrapper">
+                    <table class="matrix-data-table">
+                        <thead>
+                            <tr>
+                                <th>PERIOD</th>
+                                <th>SALES</th>
+                                <th>RECEIPTS</th>
+                                <th>DUES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Today</strong></td>
+                                <td>₹0.00</td>
+                                <td>₹0.00</td>
+                                <td>₹0.00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>This Week</strong></td>
+                                <td>₹0.00</td>
+                                <td>₹0.00</td>
+                                <td>₹0.00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>This Month</strong></td>
+                                <td>₹0.00</td>
+                                <td>₹0.00</td>
+                                <td>₹0.00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>This Quarter</strong></td>
+                                <td>₹0.00</td>
+                                <td>₹19,37,040.00</td>
+                                <td>₹0.00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>This Year</strong></td>
+                                <td>₹28,61,130.00</td>
+                                <td>₹19,37,040.00</td>
+                                <td>₹19,04,080.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+     </div>
+</body>
+</html>

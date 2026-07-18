@@ -26,4 +26,11 @@ public class CorporateClient {
 
     @Column(name = "billing_currency",length = 10)
     private String billingCurrency;
+
+    // --- LOGIN AUR SIGNUP KE LIYE YEH DO FIELDS ADD KAR DI HAIN ---
+    @Column(nullable = false, unique = true, length = 100)
+    private String email;
+
+    @Column(nullable = false, length = 255)
+    private String password;
 }

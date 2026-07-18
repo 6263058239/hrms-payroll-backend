@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Sign In | KodeKrafters HRMS</title>
     <!-- FontAwesome ke icons connection -->
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-     <style>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -142,6 +142,13 @@
             background-color: #0052a3;
         }
 
+        .divider {
+            position: relative;
+            text-align: center;
+            margin: 25px 0;
+            font-size: 13px;
+            color: #94a3b8;
+        }
         .divider::before{
             content: '';
             position: absolute;
@@ -150,7 +157,7 @@
             width: 100%;
             height: 1px;
             background-color: #e2e8f0;
-            z-index: 2;
+            z-index: 1;
         }
         .divider span {
             background-color: #ffffff;
@@ -188,7 +195,7 @@
             text-align: center;
             font-size: 14px;
             color: #64748b;
-        } 
+        }
         .signup-redirect a {
             color: #0066cc;
             text-decoration: none;
@@ -206,15 +213,15 @@
             position: relative;
         }
         .right-side::before {
-    content: '';
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(0, 102, 204, 0.15) 0%, rgba(0,0,0,0) 70%);
-    top: -50px;
-    right: -50px;
-    z-index: 0;
-}
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(0, 102, 204, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: -50px;
+            right: -50px;
+            z-index: 0;
+        }
 
         .right-content {
             max-width: 440px;
@@ -229,7 +236,6 @@
             font-weight: 500;
             margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.15);
-
         }
 
        .right-side h1 {
@@ -283,72 +289,82 @@
             height: auto;
         }
        }
-     </style>
+    </style>
 </head>
 <body>
-      <div class="split-container">
-            <!-- LEFT SIDE: Professional Login Form -->
-             <div class="left-side">
-                   <div class="login-box">
-                        <div class="brand-header">
-                          <i class="fa-solid fa-laptop-code"></i>
-                          <span>KodeKrafters</span>
-                        </div>
+<div class="split-container">
+    <!-- LEFT SIDE: Professional Login Form -->
+    <div class="left-side">
+        <div class="login-box">
+            <div class="brand-header">
+                <i class="fa-solid fa-laptop-code"></i>
+                <span>KodeKrafters</span>
+            </div>
 
-                        <h2>Welcome Back</h2>
-                        <p class="subtitle">Sign in to access your HRMS Dashboard</p>
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Sign in to access your HRMS Dashboard</p>
 
-                        <form action="/login" method="POST">
-                             <div class="input-group">
-                                <i class="fa-regular fa-envelope"></i>
-                                <input type="email" placeholder="Email Address" required>
-                             </div>
+            <!-- 💡 DTO Object Mapping Added -->
+            <form th:action="@{/login}" th:object="${loginRequest}" method="POST">
 
-                             <div class="input-group">
-                                <i class="fa-solid fa-lock"></i>
-                                <input type="password" placeholder="Password" required>
-                             </div>
+                <!-- 🚨 Alert Block for bad credentials -->
+                <div th:if="${error != null}" style="color: #dc2626; background-color: #fee2e2; border: 1px solid #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; font-weight: 500; text-align: left;">
+                    <i class="fa-solid fa-circle-exclamation" style="color: #dc2626; margin-right: 5px;"></i>
+                    <span th:text="${error}">Error Message</span>
+                </div>
 
-                             <div class="action-row">
-                                  <label class="remember-me">
-                                       <input type="checkbox"> Remember me
-                                   </label>
-                                   <a href="#" class="forgot-pass">Forgot Password?</a>
-                             </div>
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope"></i>
+                    <!-- th:field mapped to DTO field: email -->
+                    <input type="email" th:field="*{email}" placeholder="Email Address" required>
+                </div>
 
-                             <button type="submit" class="btn-login">Sign In</button>
-                        </form>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <!-- th:field mapped to DTO field: password -->
+                    <input type="password" th:field="*{password}" placeholder="Password" required>
+                </div>
 
-                        <div class="divider"><span>Or sign in with</span></div>
-                        <div class="social-login">
-                         <a href="#" class="social-btn"><i class="fa-brands fa-google"></i>Google</a>
-                         <a href="#" class="social-btn"><i class="fa-brands fa-linkedin-in"></i>Linkedin</a>
-                        </div>
+                <div class="action-row">
+                    <label class="remember-me">
+                        <input type="checkbox"> Remember me
+                    </label>
+                    <a href="#" class="forgot-pass">Forgot Password?</a>
+                </div>
 
-                        <p class="signup-redirect">
-                           Don't have an account? <a href="/signup">Sign up now</a>
-                        </p>
-                   </div>
-             </div>
-             <!-- RIGHT SIDE: Trendy Branding Box (Zoho se alag aur modern) -->
-        <div class="right-side">
-            <div class="right-content">
-                <div class="feature-badge">⚡ Smart Payroll Platform</div>
-                <h1>Effortless Payroll & HR Management</h1>
-                <p>Automate monthly payroll cycles, track employee metrics, and manage compliances with KodeKrafters single-click integration engine.</p>
-                
-                <!-- Modern Minimal Dashboard Graphic Representation -->
-                <div class="graphic-card">
-                    <div class="card-row">
-                        <span><i class="fa-solid fa-circle-check" style="color: #4ade80;"></i> Net Salary Computed</span>
-                        <strong style="color: #4ade80;">+₹48,500</strong>
-                    </div>
-                    <div class="card-progress">
-                        <div class="progress-bar"></div>
-                    </div>
+                <button type="submit" class="btn-login">Sign In</button>
+            </form>
+
+            <div class="divider"><span>Or sign in with</span></div>
+            <div class="social-login">
+                <a href="#" class="social-btn"><i class="fa-brands fa-google"></i>Google</a>
+                <a href="#" class="social-btn"><i class="fa-brands fa-linkedin-in"></i>Linkedin</a>
+            </div>
+
+            <p class="signup-redirect">
+                Don't have an account? <a href="/signup">Sign up now</a>
+            </p>
+        </div>
+    </div>
+    <!-- RIGHT SIDE: Trendy Branding Box -->
+    <div class="right-side">
+        <div class="right-content">
+            <div class="feature-badge">⚡ Smart Payroll Platform</div>
+            <h1>Effortless Payroll & HR Management</h1>
+            <p>Automate monthly payroll cycles, track employee metrics, and manage compliances with KodeKrafters single-click integration engine.</p>
+
+            <!-- Modern Minimal Dashboard Graphic Representation -->
+            <div class="graphic-card">
+                <div class="card-row">
+                    <span><i class="fa-solid fa-circle-check" style="color: #4ade80;"></i> Net Salary Computed</span>
+                    <strong style="color: #4ade80;">+₹48,500</strong>
+                </div>
+                <div class="card-progress">
+                    <div class="progress-bar"></div>
                 </div>
             </div>
         </div>
-      </div>
+    </div>
+</div>
 </body>
 </html>

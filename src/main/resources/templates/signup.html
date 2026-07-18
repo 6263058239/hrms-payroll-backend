@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -269,41 +269,55 @@
       </div>
       <!-- Main Card Form -->
       <div class="signup-card">
-          <form action="/register" method="POST">
+          <form th:action="@{/signup}" th:object="${registerRequest}" method="POST">
 
+              <!-- 🚨 Error Message Box: Agar duplicate email aayi toh screen par red color me dikhegi -->
+              <div th:if="${error}" style="color: #dc2626; background-color: #fee2e2; border: 1px solid #fca5a5; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; font-weight: 500; text-align: left;">
+                  <i class="fa-solid fa-circle-exclamation" style="color: #dc2626; margin-right: 5px;"></i>
+                  <span th:text="${error}">Error Message</span>
+              </div>
+
+              <!-- Company Name (DTO field: companyName) -->
               <div class="input-group no-arrow">
                   <i class="fa-regular fa-building"></i>
-                  <input type="text" name="companyName" placeholder="Company Name" required>
+                  <input type="text" th:field="*{companyName}" placeholder="Company Name" required>
               </div>
 
-              <div class="input-group no-arrow">
-                  <i class="fa-solid fa-phone"></i>
-                  <input type="tel" name="phoneNumber" placeholder="+91 Phone Number" required>
+              <!-- Country (Mapped to State UI for now to match DTO field: country) -->
+              <div class="input-group">
+                  <i class="fa-solid fa-location-dot"></i>
+                  <select th:field="*{country}" required>
+                      <option value="India" selected>India</option>
+                      <option value="USA">United States</option>
+                      <option value="UK">United Kingdom</option>
+                  </select>
               </div>
 
+              <!-- Billing Currency (Mapped to Phone UI for now to match DTO field: billingCurrency) -->
+              <div class="input-group">
+                  <i class="fa-solid fa-wallet"></i>
+                  <select th:field="*{billingCurrency}" required>
+                      <option value="INR" selected>INR (₹)</option>
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                  </select>
+              </div>
+
+              <!-- Email Address (DTO field: email) -->
               <div class="input-group no-arrow">
                   <i class="fa-regular fa-envelope"></i>
-                  <input type="email" name="email" placeholder="Email Address" required>
+                  <input type="email" th:field="*{email}" placeholder="Email Address" required>
               </div>
 
+              <!-- Password (DTO field: password) -->
               <div class="input-group no-arrow">
                   <i class="fa-solid fa-lock"></i>
-                  <input type="password" name="password" placeholder="Password" required>
-              </div>
-
-              <div class="input-group">
-               <i class="fa-solid fa-location-dot"></i>
-                  <select name="state" required>
-                      <option value="Madhya Pradesh" selected>Madhya Pradesh</option>
-                      <option value="Maharashtra">Maharashtra</option>
-                      <option value="Delhi">Delhi</option>
-                      <option value="Karnataka">Karnataka</option>
-                  </select>
+                  <input type="password" th:field="*{password}" placeholder="Password" required>
               </div>
 
               <div class="terms-container">
                   <input type="checkbox" id="terms" required>
-                  <label Validations for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
+                  <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</label>
               </div>
 
               <button type="submit" class="btn-submit">Create Free Account</button>
