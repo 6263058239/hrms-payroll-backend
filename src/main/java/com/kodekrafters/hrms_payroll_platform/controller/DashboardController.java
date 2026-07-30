@@ -10,13 +10,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class DashboardController {
-
     private final CorporateClientService clientService;
+
+    // In-memory list for demo presentation
+    private final List<Map<String, String>> customerList = new ArrayList<>();
+    private final List<Map<String, String>> itemList = new ArrayList<>();
 
     public DashboardController(CorporateClientService clientService) {
         this.clientService = clientService;
@@ -48,7 +52,7 @@ public class DashboardController {
         return "login";
     }
 
-    // 4. Process Login (🚨 Added missing @PostMapping)
+    // 4. Process Login
     @PostMapping("/login")
     public String loginClient(@ModelAttribute("loginRequest") CorporateClientLoginRequest request, HttpSession session, Model model) {
         Optional<CorporateClientResponse> responseOpt = clientService.loginClient(request);
@@ -61,7 +65,7 @@ public class DashboardController {
         }
     }
 
-    // 5. Show Dashboard (🚨 Added missing @GetMapping)
+    // 5. Show Dashboard
     @GetMapping("/dashboard")
     public String showDashboard(HttpSession session, Model model) {
         String clientName = (String) session.getAttribute("loggedInUser");
@@ -70,5 +74,63 @@ public class DashboardController {
         }
         model.addAttribute("clientName", clientName);
         return "dashboard";
+    }
+
+    // 6. Show Customers List Page
+    @GetMapping("/customers")
+    public String showCustomersPage(Model model) {
+        model.addAttribute("customers", customerList);
+        return "customers";
+    }
+
+    // 7. Show New Customer Creation Page
+    @GetMapping("/customers/new")
+    public String showAddCustomerPage() {
+        return "add-customer";
+    }
+
+    // 8. Process Add New Customer
+    @PostMapping("/customers/new")
+    public String handleAddCustomer(@RequestParam("name") String name,
+                                    @RequestParam("company") String company,
+                                    @RequestParam("email") String email,
+                                    @RequestParam("phone") String phone) {
+        Map<String, String> cust = new HashMap<>();
+        cust.put("name", name);
+        cust.put("company", company);
+        cust.put("email", email);
+        cust.put("phone", phone);
+
+        // Add to top of list
+        customerList.add(0, cust);
+        return "redirect:/customers";
+    }
+
+    // 9. Items Page Mapping
+    @GetMapping("/items")
+    public String showItemsPage(Model model) {
+        model.addAttribute("items", itemList);
+        return "items";
+    }
+
+    // 10. Add New Item Page Mapping
+    @GetMapping("/items/new")
+    public String showAddItemPage() {
+        return "add-items";
+    }
+
+    // 11. Process Add New Item
+    @PostMapping("/items/new")
+    public String handleAddItem(@RequestParam("name") String name,
+                                @RequestParam("rate") String rate,
+                                @RequestParam("unit") String unit) {
+        Map<String, String> item = new HashMap<>();
+        item.put("name", name);
+        item.put("rate", rate);
+        item.put("unit", unit);
+
+        // Add to top of list
+        itemList.add(0, item);
+        return "redirect:/items";
     }
 }

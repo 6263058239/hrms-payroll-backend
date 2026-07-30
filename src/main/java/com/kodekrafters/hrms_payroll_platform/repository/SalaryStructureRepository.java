@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface SalaryStructuredRepository extends JpaRepository<SalaryStructure,Long> {
+public interface SalaryStructureRepository extends JpaRepository<SalaryStructure,Long> {
     Optional<SalaryStructure> findByEmployeeEmpId(Long empId);
 }

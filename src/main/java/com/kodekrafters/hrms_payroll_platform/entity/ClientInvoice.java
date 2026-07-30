@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "client_invoices")
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class ClientInvoice {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "invoice_id")
@@ -30,6 +32,9 @@ public class ClientInvoice {
 
     @Column(name = "invoice_date", nullable = false)
     private LocalDate invoiceDate;
+
+    @Column(name = "due_date")
+    private LocalDate dueDate; // Payment due date (e.g. Net 30)
 
     @Column(name = "billing_currency", length = 10)
     private String billingCurrency;
@@ -51,7 +56,7 @@ public class ClientInvoice {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_received_status")
-    private InvoiceStatus paymentReceivedStatus;
+    private InvoiceStatus paymentReceivedStatus = InvoiceStatus.UNPAID;
 
     @Column(name = "payment_receipt_date")
     private LocalDate paymentReceiptDate;
@@ -62,7 +67,30 @@ public class ClientInvoice {
     @Column(name = "variance_due_to_tds_or_fees", precision = 15, scale = 2)
     private BigDecimal varianceDueToTdsOrFees;
 
+    @Column(name = "invoice_pdf_url", length = 500)
+    private String invoicePdfUrl; // External PDF / Zoho Link
+
+    // ==========================================
+    // AUDIT TIMESTAMPS
+    // ==========================================
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public enum InvoiceStatus {
-        UNPAID, PAID, BAD_DEBT
+        UNPAID, PAID, PARTIALLY_PAID, OVERDUE, BAD_DEBT
     }
 }

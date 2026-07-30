@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Customer | KodeKrafters HRMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Inter', sans-serif;
+        }
+        body {
+          background: #f8fafc;
+          color: #1e293b;
+          padding: 40px;
+          display: flex;
+          justify-content: center;
+        }
+        .form-card {
+          background: #ffffff;
+          width: 100%;
+          max-width: 900px;
+          border-radius: 16px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+          padding: 40px;
+        }
+        .form-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid #e2e8f0;
+          margin-bottom: 30px;
+        }
+        .form-header h2 {
+          font-size: 22px;
+          color: #0f172a;
+          font-weight: 700;
+        }
+        .form-grid {
+          display: grid;
+          grid-template-columns: 200px 1fr;
+          gap: 20px;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .form-grid label {
+          font-size: 14px;
+          font-weight: 600;
+          color: #475569;
+      }
+      .required-star {
+          color: #ef4444;
+      }
+      .form-input, .form-select {
+          width: 100%;
+          padding: 10px 14px;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          font-size: 14px;
+          outline: none;
+          background: #f8fafc;
+          transition: 0.2s;
+      }
+      .form-input:focus, .form-select:focus {
+          background: #ffffff;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+      .radio-group {
+          display: flex;
+          gap: 20px;
+      }
+      .radio-option {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+          cursor: pointer;
+      }
+      .inline-inputs {
+          display: grid;
+          grid-template-columns: 100px 1fr 1fr;
+          gap: 10px;
+      }
+      /* Tabs Section */
+      .tabs-header {
+           display: flex;
+           gap: 20px;
+           border-bottom: 2px solid #e2e8f0;
+           margin: 30px 0 20px 0;
+      }
+      .tab-item {
+          padding: 10px 4px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #64748b;
+          cursor: pointer;
+          border-bottom: 2px solid transparent;
+          margin-bottom: -2px;
+      }
+      .tab-item.active {
+          color: #2563eb;
+          border-color: #2563eb;
+      }
+      .btn-group {
+          display: flex;
+          gap: 12px;
+          margin-top: 30px;
+      }
+      .btn-save {
+          background: #2563eb;
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+      }
+      .btn-cancel {
+          background: #f1f5f9;
+          color: #475569;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-weight: 600;
+          text-decoration: none;
+      }
+    </style>
+</head>
+<body>
+<div class="form-card">
+    <div class="form-header">
+        <h2>New Customer</h2>
+        <a href="/customers" class="btn-cancel"><i class="fa-solid fa-xmark"></i></a>
+    </div>
+
+    <form action="/customers/new" method="POST">
+        <div class="form-grid">
+            <label>Customer Type</label>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="customerType" checked> Business</label>
+                <label class="radio-option"><input type="radio" name="customerType"> Individual</label>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <label>Primary Contact</label>
+            <div class="inline-inputs">
+                <select class="form-select"><option>Salutation</option><option>Mr.</option><option>Mrs.</option></select>
+                <input type="text" class="form-input" placeholder="First Name">
+                <input type="text" class="form-input" placeholder="Last Name">
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <label>Company Name</label>
+            <input type="text" name="company" class="form-input" placeholder="Company Name" required>
+        </div>
+
+        <div class="form-grid">
+            <label>Customer Display Name <span class="required-star">*</span></label>
+            <input type="text" name="name" class="form-input" placeholder="Display Name" required>
+        </div>
+
+        <div class="form-grid">
+            <label>Currency</label>
+            <select class="form-select">
+                <option selected>INR - Indian Rupee</option>
+                <option>USD - US Dollar</option>
+            </select>
+        </div>
+
+        <div class="form-grid">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-input" placeholder="Email Address" required>
+        </div>
+
+        <div class="form-grid">
+            <label>Work Phone / Mobile</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <input type="text" name="phone" class="form-input" placeholder="Work Phone" required>
+                <input type="text" class="form-input" placeholder="Mobile">
+            </div>
+        </div>
+
+        <div class="tabs-header">
+            <div class="tab-item active">Other Details</div>
+            <div class="tab-item">Address</div>
+            <div class="tab-item">Contact Persons</div>
+            <div class="tab-item">Remarks</div>
+        </div>
+
+        <div class="form-grid">
+            <label>GST Treatment <span class="required-star">*</span></label>
+            <select class="form-select">
+                <option selected>Select GST Treatment</option>
+                <option>Registered Business - Regular</option>
+                <option>Consumer</option>
+                <option>Unregistered Business</option>
+            </select>
+        </div>
+
+        <div class="form-grid">
+            <label>Place of Supply <span class="required-star">*</span></label>
+            <select class="form-select">
+                <option selected>Karnataka</option>
+                <option>Tamil Nadu</option>
+                <option>Maharashtra</option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn-save">Save Customer</button>
+            <a href="/customers" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

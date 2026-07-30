@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface EmployeeRepository extends JpaRepository<Employee,Long> {
 Optional<Employee> findByUanNumber(String uanNumber);
 List<Employee> findByDateOfLeftIsNull();
+    Optional<Employee> findByOfficialEmail(String officialEmail);
+    List<Employee> findByEmployeeStatus(Employee.EmployeeStatus employeeStatus);
 }

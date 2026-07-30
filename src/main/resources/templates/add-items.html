@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Item | KodeKrafters HRMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #f8fafc; color: #1e293b; padding: 40px; display: flex; justify-content: center; }
+
+        .form-card { background: #ffffff; width: 100%; max-width: 850px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 40px; }
+        .form-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px; }
+        .form-header h2 { font-size: 20px; color: #0f172a; font-weight: 700; }
+
+        .form-grid { display: grid; grid-template-columns: 180px 1fr; gap: 20px; align-items: center; margin-bottom: 20px; }
+        .form-grid label { font-size: 14px; font-weight: 600; color: #475569; }
+        .required-star { color: #ef4444; }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc; transition: 0.2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { background: #ffffff; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+        .radio-group { display: flex; gap: 20px; }
+        .radio-option { display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer; }
+
+        .btn-group { display: flex; gap: 12px; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+        .btn-save { background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        .btn-cancel { background: #f1f5f9; color: #475569; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <div class="form-header">
+        <h2>New Item</h2>
+        <a href="/items" class="btn-cancel"><i class="fa-solid fa-xmark"></i></a>
+    </div>
+
+    <form action="/items/new" method="POST">
+        <!-- Name -->
+        <div class="form-grid">
+            <label>Name <span class="required-star">*</span></label>
+            <input type="text" name="name" class="form-input" placeholder="Item Name" required>
+        </div>
+
+        <!-- Type -->
+        <div class="form-grid">
+            <label>Type</label>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="itemType" checked> Goods</label>
+                <label class="radio-option"><input type="radio" name="itemType"> Service</label>
+            </div>
+        </div>
+
+        <!-- Unit -->
+        <div class="form-grid">
+            <label>Unit</label>
+            <select name="unit" class="form-select">
+                <option value="pcs" selected>pcs</option>
+                <option value="box">box</option>
+                <option value="hrs">hrs</option>
+            </select>
+        </div>
+
+        <!-- HSN/SAC Code -->
+        <div class="form-grid">
+            <label>HSN / SAC Code</label>
+            <input type="text" class="form-input" placeholder="e.g. 998519">
+        </div>
+
+        <!-- Tax Preference -->
+        <div class="form-grid">
+            <label>Tax Preference <span class="required-star">*</span></label>
+            <select class="form-select">
+                <option selected>Taxable</option>
+                <option>Non-Taxable</option>
+            </select>
+        </div>
+
+        <!-- Sales Information Header -->
+        <h4 style="margin: 30px 0 15px 0; color: #0f172a; font-size: 15px;">Sales Information</h4>
+
+        <!-- Selling Price -->
+        <div class="form-grid">
+            <label>Selling Price <span class="required-star">*</span></label>
+            <div style="display: flex; gap: 10px;">
+                <span style="padding: 10px 14px; background: #e2e8f0; border-radius: 8px; font-size: 14px; font-weight: 600;">INR</span>
+                <input type="number" step="0.01" name="rate" class="form-input" placeholder="0.00" required>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="form-grid">
+            <label>Description</label>
+            <textarea class="form-textarea" rows="3" placeholder="Enter item description"></textarea>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-group">
+            <button type="submit" class="btn-save">Save Item</button>
+            <a href="/items" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

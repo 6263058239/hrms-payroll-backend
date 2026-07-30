@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers | KodeKrafters HRMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            display: flex;
+            min-height: 100vh;
+        }
+        /* Sidebar Styling (Matching KodeKrafters Theme) */
+        .sidebar {
+            width: 260px;
+            background: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        .sidebar-header {
+           padding: 24px;
+           font-size: 20px;
+           font-weight: 700;
+           color: #ffffff;
+           display: flex;
+           align-items: center;
+           gap: 12px;
+           border-bottom: 1px solid #1e293b; 
+        }
+        .sidebar-header i {
+            color: #3b82f6;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: #1e293b;
+            color: #3b82f6;
+        }
+        /* Main Content Container */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+        /* Top Header Navbar */
+        .top-navbar {
+            background: #ffffff;
+            height: 64px;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .search-container {
+             position: relative;
+             width: 380px;
+        }
+        .search-container i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 9px 16px 9px 40px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .search-container input:focus {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.1);
+        }
+        .top-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .quick-add-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+        .quick-add-btn:hover {
+            background: #2563eb;
+        }
+        /* Customers Module View Area */
+        .content-area {
+            padding: 30px;
+        }
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        /* Custom Dropdown Trigger */
+        .view-filter-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .filter-btn-trigger {
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .filter-btn-trigger i {
+            font-size: 14px;
+            color: #64748b;
+        }
+        /* Dropdown Menu Box */
+        .dropdown-menu-box {
+            display: none;
+            position: absolute;
+            top: 110%;
+            left: 0;
+            background: #ffffff;
+            min-width: 240px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            z-index: 100;
+            padding: 8px 0;
+        }
+        .dropdown-menu-box.show {
+            display: block;
+        }
+        .dropdown-menu-box a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            color: #334155;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .dropdown-menu-box a:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+        .dropdown-menu-box a i.fa-star {
+            color: #cbd5e1;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 6px 0;
+        }
+        .dropdown-action-link {
+            color: #2563eb !important;
+            font-weight: 600;
+        }
+        /* Actions Buttons Group */
+        .action-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-primary-add {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: 0.2s;
+        }
+        .btn-primary-add:hover {
+             background: #1d4ed8;
+        }
+        /* 3-Dots Context Menu Container */
+        .more-actions-container {
+            position: relative;
+        }
+        .btn-icon-more {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #475569;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .btn-icon-more:hover{
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+        /* 3-Dots Dropdown Submenus */
+        .sub-menu-box {
+            display: none;
+            position: absolute;
+            top: 110%;
+            right: 0;
+            background: #ffffff;
+            width: 220px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            z-index: 100;
+            padding: 6px 0;
+        }
+        .sub-menu-box.show {
+            display: block;
+        }
+        .sub-menu-item {
+            position: relative;
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.2s;
+        }
+        .sub-menu-item:hover {
+            background: #f8fafc;
+            color: #2563eb;
+        }
+        /* Nested Hover Flyout Menu */
+        .flyout-menu {
+            display: none;
+            position: absolute;
+            right: 100%;
+            top: 0;
+            background: #ffffff;
+            width: 200px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 6px 0;
+        }
+        .sub-menu-item:hover .flyout-menu {
+            display: block;
+        }
+        .table-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            overflow: hidden;
+        }
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        .custom-table th {
+            background: #f8fafc;
+            padding: 16px 20px;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .custom-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-weight: 500;
+        }
+        .custom-table tr:hover {
+            background-color: #f8fafc;
+        }
+        .customer-name-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .customer-name-link:hover {
+            text-decoration: underline;
+        }
+        .checkbox-cell {
+            width: 40px;
+        }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <i class="fa-solid fa-laptop-code"></i>
+        <span>KodeKrafters</span>
+    </div>
+    <ul class="sidebar-menu">
+        <li><a href="/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+        <li><a href="/customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+        <li><a href="/items"><i class="fa-solid fa-box"></i> Items</a></li>
+        <li><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Invoices</a></li>
+        <li><a href="#"><i class="fa-solid fa-credit-card"></i> Payments Received</a></li>
+        <li><a href="#"><i class="fa-solid fa-truck-ramp-box"></i> Delivery Chalan</a></li>
+        <li><a href="#"><i class="fa-solid fa-receipt"></i> Expenses</a></li>
+        <li><a href="#"><i class="fa-solid fa-clock"></i> Time Tracking</a></li>
+        <li><a href="#"><i class="fa-solid fa-file-contract"></i> GST Filing</a></li>
+        <li><a href="#"><i class="fa-solid fa-chart-pie"></i> Reports</a></li>
+        <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+    </ul>
+</aside>
+<main class="main-content">
+    <header class="top-navbar">
+        <div class="search-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search in Customers ( / )">
+        </div>
+        <div class="top-nav-right">
+            <button class="quick-add-btn" title="Quick Create"><i class="fa-solid fa-plus"></i></button>
+            <i class="fa-regular fa-bell" style="font-size: 18px; color: #64748b; cursor: pointer;"></i>
+            <i class="fa-solid fa-gear" style="font-size: 18px; color: #64748b; cursor: pointer;"></i>
+        </div>
+    </header>
+
+    <div class="content-area">
+        <div class="module-header">
+            <div class="view-filter-dropdown">
+                <button class="filter-btn-trigger" id="viewDropdownBtn">
+                    <span id="currentViewTitle">Active Customers</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+
+                <div class="dropdown-menu-box" id="viewDropdownMenu">
+                    <a href="#" onclick="selectView('All Customers')">All Customers <i class="fa-regular fa-star"></i></a>
+                    <a href="#" onclick="selectView('Active Customers')">Active Customers <i class="fa-regular fa-star"></i></a>
+                    <a href="#" onclick="selectView('CRM Customers')">CRM Customers <i class="fa-regular fa-star"></i></a>
+                    <a href="#" onclick="selectView('Duplicate Customers')">Duplicate Customers <i class="fa-regular fa-star"></i></a>
+                    <a href="#" onclick="selectView('Inactive Customers')">Inactive Customers <i class="fa-regular fa-star"></i></a>
+                    <a href="#" onclick="selectView('Customer Portal Enabled')">Customer Portal Enabled <i class="fa-regular fa-star"></i></a>
+                    <a href="#" onclick="selectView('Customer Portal Disabled')">Customer Portal Disabled <i class="fa-regular fa-star"></i></a>
+                    <a href="#" onclick="selectView('Overdue Customers')">Overdue Customers <i class="fa-regular fa-star"></i></a>
+                    <a href="#" onclick="selectView('Unpaid Customers')">Unpaid Customers <i class="fa-regular fa-star"></i></a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-action-link"><i class="fa-solid fa-plus-circle"></i> New View</a>
+                </div>
+            </div>
+            <div class="action-group">
+                <a href="/customers/new" class="btn-primary-add">
+                    <i class="fa-solid fa-plus"></i> New
+                </a>
+
+                <div class="more-actions-container">
+                    <button class="btn-icon-more" id="moreActionsBtn">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+
+                    <div class="sub-menu-box" id="moreActionsMenu">
+                        <div class="sub-menu-item">
+                            <span><i class="fa-solid fa-arrow-down-short-wide" style="margin-right: 8px;"></i> Sort by</span>
+                            <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+                            <div class="flyout-menu">
+                                <div class="sub-menu-item">Name</div>
+                                <div class="sub-menu-item">Company Name</div>
+                                <div class="sub-menu-item">Receivables (BCY)</div>
+                                <div class="sub-menu-item">Unused Credits (BCY)</div>
+                                <div class="sub-menu-item">Created Time</div>
+                                <div class="sub-menu-item">Last Modified Time</div>
+                            </div>
+                        </div>
+                        <div class="sub-menu-item">
+                            <span><i class="fa-solid fa-file-import" style="margin-right: 8px;"></i> Import</span>
+                            <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+                            <div class="flyout-menu">
+                                <div class="sub-menu-item">Import Customers</div>
+                                <div class="sub-menu-item">Import Contact Persons</div>
+                            </div>
+                        </div>
+                        <div class="sub-menu-item">
+                            <span><i class="fa-solid fa-file-export" style="margin-right: 8px;"></i> Export</span>
+                            <i class="fa-solid fa-chevron-right" style="font-size: 11px;"></i>
+                            <div class="flyout-menu">
+                                <div class="sub-menu-item">Export Customers</div>
+                                <div class="sub-menu-item">Export Contact Persons</div>
+                                <div class="sub-menu-item">Export Current View</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="sub-menu-item"><i class="fa-solid fa-sliders" style="margin-right: 8px;"></i> Preferences</div>
+                        <div class="sub-menu-item" onclick="location.reload()"><i class="fa-solid fa-rotate-right" style="margin-right: 8px;"></i> Refresh List</div>
+                        <div class="sub-menu-item"><i class="fa-solid fa-table-columns" style="margin-right: 8px;"></i> Reset Column Width</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table class="custom-table">
+                <thead>
+                <tr>
+                    <th class="checkbox-cell"><input type="checkbox"></th>
+                    <th>Name</th>
+                    <th>Company Name</th>
+                    <th>Email</th>
+                    <th>Work Phone</th>
+                    <th>Place of Supply</th>
+                    <th>Receivables (BCY)</th>
+                    <th>Unused Credits (BCY)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Dynamically added Customers from Form Submission -->
+                <tr th:each="cust : ${customers}">
+                    <td class="checkbox-cell"><input type="checkbox"></td>
+                    <td><a href="#" class="customer-name-link" th:text="${cust.name}">Customer Name</a></td>
+                    <td th:text="${cust.company}">Company Name</td>
+                    <td th:text="${cust.email}">Email</td>
+                    <td th:text="${cust.phone}">Work Phone</td>
+                    <td>Delhi</td>
+                    <td style="font-weight: 700; color: #0f172a;">₹0.00</td>
+                    <td>₹0.00</td>
+                </tr>
+
+                <!-- Default Dummy Customers -->
+                <tr>
+                    <td class="checkbox-cell"><input type="checkbox"></td>
+                    <td><a href="#" class="customer-name-link">KPMG DELIVERY NETWORK INDIA PRIVATE LIMITED</a></td>
+                    <td>KPMG DELIVERY NETWORK INDIA PRIVATE LIMITED</td>
+                    <td>in-fmkgsvendorpay@kpmg.com</td>
+                    <td>+91 9876543210</td>
+                    <td>Karnataka</td>
+                    <td style="font-weight: 700; color: #0f172a;">₹2,37,770.00</td>
+                    <td>₹0.00</td>
+                </tr>
+                <tr>
+                    <td class="checkbox-cell"><input type="checkbox"></td>
+                    <td><a href="#" class="customer-name-link">Mindsprint Digital (India) Private Ltd</a></td>
+                    <td>Mindsprint Digital (India) Private Ltd</td>
+                    <td>sridevi.m@mindsprint.com</td>
+                    <td>+91 9123456789</td>
+                    <td>Tamil Nadu</td>
+                    <td style="font-weight: 700; color: #0f172a;">₹47,19,685.00</td>
+                    <td>₹0.00</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+    // View Dropdown Toggle
+    const viewBtn = document.getElementById('viewDropdownBtn');
+    const viewMenu = document.getElementById('viewDropdownMenu');
+
+    viewBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        viewMenu.classList.toggle('show');
+        if(moreMenu) moreMenu.classList.remove('show');
+    });
+
+    // 3-Dots Action Dropdown Toggle
+    const moreBtn = document.getElementById('moreActionsBtn');
+    const moreMenu = document.getElementById('moreActionsMenu');
+
+    if(moreBtn) {
+        moreBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            moreMenu.classList.toggle('show');
+            viewMenu.classList.remove('show');
+        });
+    }
+
+    // Close on Click Outside
+    window.addEventListener('click', () => {
+        viewMenu.classList.remove('show');
+        if(moreMenu) moreMenu.classList.remove('show');
+    });
+
+    function selectView(title) {
+        document.getElementById('currentViewTitle').innerText = title;
+    }
+</script>
+</body>
+</html>
