@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | KodeKrafters HRMS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .login-header {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 32px 28px;
+            text-align: center;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .login-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .login-header p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 6px;
+        }
+
+        .login-body {
+            padding: 32px 28px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        /* FLEX INPUT WRAPPER FIX */
+        .input-box-container {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 0 14px;
+            transition: 0.2s;
+        }
+
+        .input-box-container:focus-within {
+            background: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-box-container i.field-icon {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-right: 12px; /* Perfect space between icon & text */
+        }
+
+        .form-input-clean {
+            width: 100%;
+            padding: 12px 0;
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            font-size: 14px;
+            color: #1e293b;
+        }
+
+        .toggle-password {
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .toggle-password:hover {
+            color: #475569;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-login:hover {
+            background: #1d4ed8;
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 12px;
+            margin-bottom: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h2><i class="fa-solid fa-user-shield" style="color: #3b82f6; margin-right: 8px;"></i> Admin Portal</h2>
+            <p>KodeKrafters HRMS Console Management</p>
+        </div>
+
+        <form id="loginForm" class="login-body">
+            <div id="errorMsg" class="error-msg">
+                <i class="fa-solid fa-circle-exclamation"></i> Invalid credentials or missing fields.
+            </div>
+
+            <div class="form-group">
+                <label>Admin Email / Username</label>
+                <div class="input-box-container">
+                    <i class="fa-solid fa-envelope field-icon"></i>
+                    <input type="text" id="username" class="form-input-clean" placeholder="admin@company.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-box-container">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="password" class="form-input-clean" placeholder="••••••••" required>
+                    <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+                </div>
+            </div>
+
+            <button type="submit" id="loginBtn" class="btn-login">
+                <span>Login to Console</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Password Visibility Toggle
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
+
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // Form Submit Handler (Connected to Spring Boot API)
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (!username || !password) {
+                errorMsg.innerText = "Please fill in all required fields.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            errorMsg.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+
+            try {
+                // Hit Spring Boot Admin Login API
+                const response = await fetch('http://localhost:8080/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: username, password: password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status === "SUCCESS") {
+                    // Save session info
+                    localStorage.setItem("admin_token", "active");
+                    localStorage.setItem("admin_user", data.username);
+
+                    // Redirect to Dynamic Console
+                    window.location.href = 'admin-console.html';
+                } else {
+                    errorMsg.innerText = data.message || "Invalid credentials or unauthorized role!";
+                    errorMsg.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = `<span>Login to Console</span> <i class="fa-solid fa-arrow-right"></i>`;
+                }
+            } catch (err) {
+                console.error("Login API Error:", err);
+                errorMsg.innerText = "Backend connection failed! Is Spring Boot running on port 8080?";
+                errorMsg.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = `<span>Login to Console</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -35,6 +35,7 @@ return ResponseEntity.ok(mapToResponseDto(payroll));
 /**
  * 2. FINALIZE & PERSIST PAYROLL (Save to DB)
  */
+@PostMapping("/finalize")
 public ResponseEntity<PayrollResponseDto> finalizeAndSavePayroll(@RequestBody PayrollRequestDto payrollRequestDto)
 {
     MonthlyPayroll savedPayroll = payrollService.saveMonthlyPayroll(
@@ -63,9 +64,15 @@ public ResponseEntity<List<PayrollResponseDto>> getPayrollHistory(@PathVariable 
         return ResponseEntity.ok(mapToResponseDto(updatedPayroll));
     }
     // Helper Method: Entity to Response DTO Mapping
-    private PayrollResponseDto mapToResponseDto(MonthlyPayroll payroll)
-    {
+    private PayrollResponseDto mapToResponseDto(MonthlyPayroll payroll) {
         int netPaidDays = payroll.getTotalWorkingDays() - (payroll.getLossOfPayDays() != null ? payroll.getLossOfPayDays() : 0);
+
+        // Baseline structure se PT aur PF ki exact value read kar rahe hain
+        BigDecimal pt = (payroll.getEmployee().getSalaryStructure() != null && payroll.getEmployee().getSalaryStructure().getProfessionalTax() != null)
+                ? payroll.getEmployee().getSalaryStructure().getProfessionalTax() : BigDecimal.ZERO;
+        BigDecimal pf = (payroll.getEmployee().getSalaryStructure() != null && payroll.getEmployee().getSalaryStructure().getPfEmployeeContribution() != null)
+                ? payroll.getEmployee().getSalaryStructure().getPfEmployeeContribution() : BigDecimal.ZERO;
+
         return PayrollResponseDto.builder()
                 .empId(payroll.getEmployee().getEmpId())
                 .employeeName(payroll.getEmployee().getEmployeeName())
@@ -75,12 +82,12 @@ public ResponseEntity<List<PayrollResponseDto>> getPayrollHistory(@PathVariable 
                 .lossOfPayDays(payroll.getLossOfPayDays())
                 .netPaidDays(netPaidDays)
                 .grossEarned(payroll.getGrossEarned())
-                .professionalTaxDeduction(BigDecimal.ZERO)
-                .providentFundDeduction(BigDecimal.ZERO)
+                .professionalTaxDeduction(pt)
+                .providentFundDeduction(pf)
                 .totalDeductions(payroll.getGrossEarned().subtract(payroll.getNetPayable()))
                 .netTakeHomePay(payroll.getNetPayable())
                 .paymentStatus(payroll.getPaymentStatus() != null ? payroll.getPaymentStatus().name() : "PENDING")
                 .build();
-
     }
+
 }
