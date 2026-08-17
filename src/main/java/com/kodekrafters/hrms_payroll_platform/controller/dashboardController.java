@@ -1,10 +1,10 @@
 package com.kodekrafters.hrms_payroll_platform.controller;
 
-import com.kodekrafters.hrms_payroll_platform.dto.CorporateClientLoginRequest;
-import com.kodekrafters.hrms_payroll_platform.dto.CorporateClientRegisterRequest;
-import com.kodekrafters.hrms_payroll_platform.dto.CorporateClientResponse;
+import com.kodekrafters.hrms_payroll_platform.dto.*;
 import com.kodekrafters.hrms_payroll_platform.service.CorporateClientService;
+import com.kodekrafters.hrms_payroll_platform.service.SalaryStructureService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,15 +15,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.*;
 
 @Controller
-public class DashboardController {
+public class dashboardController {
     private final CorporateClientService clientService;
+    private final SalaryStructureService salaryStructureService;
 
     // In-memory list for demo presentation
     private final List<Map<String, String>> customerList = new ArrayList<>();
     private final List<Map<String, String>> itemList = new ArrayList<>();
 
-    public DashboardController(CorporateClientService clientService) {
+    public dashboardController(CorporateClientService clientService, SalaryStructureService salaryStructureService) {
         this.clientService = clientService;
+        this.salaryStructureService=salaryStructureService;
     }
 
     // 1. Show Signup Page
@@ -133,4 +135,5 @@ public class DashboardController {
         itemList.add(0, item);
         return "redirect:/items";
     }
+
 }

@@ -338,6 +338,10 @@
                         <label class="checkbox-label">
                             <input type="checkbox" id="ptApplicable" checked> Enable Professional Tax (PT) Deduction
                         </label>
+                        <!-- ⚡ NEW TDS CHECKBOX -->
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="tdsApplicable" checked> Enable Income Tax (TDS) Deduction (10%)
+                        </label>
                     </div>
                 </div>
             </div>
@@ -534,17 +538,24 @@
             const generatedEmpId = savedEmployee.empId;
 
             // STEP 2: Save Salary Structure for the generated Employee ID
-            const pfApplicable = document.getElementById('pfApplicable').checked;
-            const ptApplicable = document.getElementById('ptApplicable').checked;
+            const pfApplicable = document.getElementById('pfApplicable')?.checked;
+            const ptApplicable = document.getElementById('ptApplicable')?.checked;
+            const tdsApplicable = document.getElementById('tdsApplicable')?.checked; // ⚡ TDS Checkbox
+
+            const basicSalaryVal = parseFloat(document.getElementById('basicSalary').value) || 0.0;
+
+            // ⚡ TDS Calculation: Basic Salary ka 10%
+            const calculatedTds = tdsApplicable ? (basicSalaryVal * 0.10) : 0.0;
 
             const salaryPayload = {
                 employee: { empId: generatedEmpId },
-                basicSalary: parseFloat(document.getElementById('basicSalary').value) || 0.0,
+                basicSalary: basicSalaryVal,
                 hra: parseFloat(document.getElementById('hra').value) || 0.0,
                 da: parseFloat(document.getElementById('da').value) || 0.0,
                 specialAllowance: parseFloat(document.getElementById('specialAllowance').value) || 0.0,
                 pfEmployeeContribution: pfApplicable ? 1800.00 : 0.00,
                 professionalTax: ptApplicable ? 200.00 : 0.00,
+                tdsIncomeTax: calculatedTds, // ⚡ Entity field `tdsIncomeTax` DB mapping
                 currency: "INR",
                 payFrequency: "MONTHLY"
             };

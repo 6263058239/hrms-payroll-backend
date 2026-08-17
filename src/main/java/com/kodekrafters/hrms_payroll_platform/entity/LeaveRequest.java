@@ -1,5 +1,6 @@
 package com.kodekrafters.hrms_payroll_platform.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +21,9 @@ public class LeaveRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "emp_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Employee employee;
 
     @Enumerated(EnumType.STRING)
@@ -42,10 +44,19 @@ public class LeaveRequest {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status")
+    @Builder.Default
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
-    @Column(name = "approved_by")
-    private String approvedBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approved_by")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Employee approvedBy;
+
+    @Column(name = "approver_remarks", length = 500)
+    private String approverRemarks;
+
+    @Version
+    private Integer version; // For optimistic locking handling
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

@@ -1,7 +1,10 @@
 package com.kodekrafters.hrms_payroll_platform.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,6 +12,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "employees")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Employee {
 
     @Id
@@ -134,8 +139,10 @@ public class Employee {
     // ==========================================
     // RELATIONS
     // ==========================================
+    @JsonIgnore
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     private SalaryStructure salaryStructure;
+
 
     // ==========================================
     // INNER ENUM FOR LIFECYCLE WORKFLOW

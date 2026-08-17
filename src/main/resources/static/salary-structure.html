@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Structure Directory - HRMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .nav-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 14px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover { background-color: rgba(56, 189, 248, 0.1); }
+
+        .btn-csv {
+            background-color: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-csv:hover { background-color: #059669; }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #020617;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        th, td { padding: 14px 16px; }
+
+        tbody tr {
+            border-bottom: 1px solid #334155;
+            transition: background 0.15s ease;
+        }
+
+        tbody tr:hover { background-color: rgba(51, 65, 85, 0.4); }
+
+        .emp-id {
+            color: #38bdf8;
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .net-pay {
+            color: #34d399;
+            font-weight: bold;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            margin-right: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit {
+            background-color: rgba(217, 119, 6, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .btn-edit:hover { background-color: #d97706; color: #ffffff; }
+
+        .btn-delete {
+            background-color: rgba(225, 29, 72, 0.2);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .btn-delete:hover { background-color: #e11d48; color: #ffffff; }
+
+        .btn-payslip {
+            background-color: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .btn-payslip:hover { background-color: #0284c7; color: #ffffff; }
+
+        /* Modal Overlay & Form */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { margin-bottom: 8px; }
+        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+        .form-control {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 10px;
+            color: #f8fafc;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-cancel { background-color: #475569; color: #ffffff; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; }
+        .btn-save { background-color: #10b981; color: #ffffff; padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div>
+            <h1>💵 Employee Salary Structure Directory</h1>
+            <p>Manage base salary, DA, HRA, allowances & statutory deductions mapped with PostgreSQL DB</p>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="exportTableToCSV('salary_report.csv')" class="btn-csv">📥 Export CSV</button>
+            <a href="employee-details.html" class="nav-link">← Employee Directory</a>
+        </div>
+    </div>
+    <!-- Dashboard Summary Metrics Cards -->
+    <div style="display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap;">
+
+        <!-- Card 1: Total Active Employees -->
+        <div style="flex: 1; min-width: 250px; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <p style="margin: 0; font-size: 13px; color: #94a3b8; font-weight: 500;">Total Active Employees</p>
+                <h3 id="metric-total-employees" style="margin: 6px 0 0 0; font-size: 26px; font-weight: 700; color: #38bdf8;">--</h3>
+            </div>
+            <div style="background-color: rgba(56, 189, 248, 0.1); padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <svg style="width: 28px; height: 28px; fill: none; stroke: #38bdf8; stroke-width: 2;" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 2: Total Monthly Payroll -->
+        <div style="flex: 1; min-width: 250px; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <p style="margin: 0; font-size: 13px; color: #94a3b8; font-weight: 500;">Total Monthly Payroll</p>
+                <h3 id="metric-total-payroll" style="margin: 6px 0 0 0; font-size: 26px; font-weight: 700; color: #34d399;">₹0.00</h3>
+            </div>
+            <div style="background-color: rgba(52, 211, 153, 0.1); padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <svg style="width: 28px; height: 28px; fill: none; stroke: #34d399; stroke-width: 2;" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Card 3: Total Statutory Deductions -->
+        <div style="flex: 1; min-width: 250px; background-color: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <p style="margin: 0; font-size: 13px; color: #94a3b8; font-weight: 500;">Total Statutory Deductions (TDS + PF)</p>
+                <h3 id="metric-total-deductions" style="margin: 6px 0 0 0; font-size: 26px; font-weight: 700; color: #fbbf24;">₹0.00</h3>
+            </div>
+            <div style="background-color: rgba(251, 191, 36, 0.1); padding: 10px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                <svg style="width: 28px; height: 28px; fill: none; stroke: #fbbf24; stroke-width: 2;" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l2-2 4 4m0-7a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+        </div>
+
+    </div>
+    <!-- ⚡ Search Controls -->
+    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+        <input type="text" id="searchSalaryInput" onkeyup="filterSalaries()" placeholder="🔍 Search Employee Name or ID..."
+               style="flex: 1; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; color: #f8fafc; outline: none; font-size: 14px;">
+    </div>
+
+    <div class="table-responsive">
+        <table id="salaryTable">
+            <thead>
+            <tr>
+                <th>EMP ID</th>
+                <th>Employee Name</th>
+                <th>Basic Salary</th>
+                <th>HRA</th>
+                <th>DA</th>
+                <th>Special Allowance</th>
+                <th>PF / Deductions</th>
+                <th>Net Salary</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="salaryTableBody">
+            <tr>
+                <td colspan="9" style="text-align: center; color: #94a3b8;">Loading salary records from database...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Edit Salary Modal -->
+<div id="salaryModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">Edit Salary Structure</div>
+        <input type="hidden" id="editSalaryId">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Basic Salary (₹)</label>
+                <input type="number" id="editBasic" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>HRA Allowance (₹)</label>
+                <input type="number" id="editHra" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Dearness Allowance - DA (₹)</label>
+                <input type="number" id="editDa" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Special Allowance (₹)</label>
+                <input type="number" id="editAllowance" class="form-control">
+            </div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+            <label>Deductions / PF (₹)</label>
+            <input type="number" id="editDeductions" class="form-control">
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal()" class="btn-cancel">Cancel</button>
+            <button onclick="saveSalaryEdit()" class="btn-save">Update Salary</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "http://localhost:8080/api/v1/salary-structures";
+
+    // 1. Fetch & Render Salary Details
+    async function fetchSalaries() {
+        try {
+            const res = await fetch(API_URL);
+            if (!res.ok) throw new Error("API Response Error");
+
+            const salaries = await res.json();
+            const tbody = document.getElementById("salaryTableBody");
+            tbody.innerHTML = "";
+
+            if (!salaries || salaries.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #94a3b8;">No salary records found in database.</td></tr>`;
+                return;
+            }
+
+            salaries.forEach(sal => {
+                const empName = sal.employee ? sal.employee.employeeName : 'N/A';
+                const empId = sal.employee ? sal.employee.empId : (sal.id || '-');
+                const designation = sal.employee ? sal.employee.designation : 'Software Engineer';
+
+                const basic = sal.basicSalary || 0;
+                const hra = sal.hra || 0;
+                const da = sal.da || 0;
+                const special = sal.specialAllowance || 0;
+
+                const pf = sal.pfEmployeeContribution || 0;
+                const pt = sal.professionalTax || 0;
+                const tds = sal.tdsIncomeTax || 0;
+                const ded = pf + pt + tds;
+
+                const netPay = basic + hra + da + special - ded;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="emp-id">#${empId}</td>
+                        <td style="font-weight: 600; color: #ffffff;">${empName}</td>
+                        <td>₹${basic}</td>
+                        <td>₹${hra}</td>
+                        <td style="color: #38bdf8;">₹${da}</td>
+                        <td>₹${special}</td>
+                        <td style="color: #f43f5e;">- ₹${ded}</td>
+                        <td class="net-pay">₹${netPay}</td>
+                        <td>
+                            <button onclick="generatePayslip('${empId}', '${empName}', '${designation}', ${basic}, ${hra}, ${da}, ${special}, ${pf}, ${pt}, ${tds}, ${netPay})" class="action-btn btn-payslip">Payslip 📄</button>
+                            <button onclick="openSalaryModal(${sal.id}, ${basic}, ${hra}, ${da}, ${special}, ${ded})" class="action-btn btn-edit">Edit</button>
+                            <button onclick="deleteSalary(${sal.id})" class="action-btn btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } catch (err) {
+            console.error("Error loading salaries:", err);
+            document.getElementById("salaryTableBody").innerHTML = `<tr><td colspan="9" style="text-align: center; color: #f43f5e;">Failed to load salary records. Check backend endpoints.</td></tr>`;
+        }
+    }
+
+    // 2. Search Filter
+    function filterSalaries() {
+        const searchVal = document.getElementById("searchSalaryInput").value.toLowerCase();
+        const rows = document.querySelectorAll("#salaryTableBody tr");
+
+        rows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            row.style.display = text.includes(searchVal) ? "" : "none";
+        });
+    }
+
+    // 3. Export Table to CSV File
+    function exportTableToCSV(filename) {
+        const csv = [];
+        const rows = document.querySelectorAll("#salaryTable tr");
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = [], cols = rows[i].querySelectorAll("td, th");
+            // Exclude last column (Actions)
+            for (let j = 0; j < cols.length - 1; j++) {
+                let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/,/g, "");
+                row.push('"' + data + '"');
+            }
+            csv.push(row.join(","));
+        }
+
+        const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+        const downloadLink = document.createElement("a");
+        downloadLink.download = filename;
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+
+    // 4. On-The-Fly Payslip PDF Window Generator
+    function generatePayslip(empId, empName, designation, basic, hra, da, special, pf, pt, tds, netPay) {
+        const gross = basic + hra + da + special;
+        const totalDeductions = pf + pt + tds;
+
+        const payslipWindow = window.open('', '_blank');
+        payslipWindow.document.write(`
+            <html>
+            <head>
+                <title>Payslip - ${empName} (#${empId})</title>
+                <style>
+                    body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #1e293b; background-color: #f8fafc; }
+                    .payslip-card { max-width: 700px; margin: 0 auto; background: #ffffff; border: 1px solid #cbd5e1; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+                    .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 15px; margin-bottom: 20px; }
+                    .header h2 { margin: 0; color: #1e3a8a; }
+                    .header p { margin: 5px 0 0 0; color: #64748b; font-size: 13px; }
+                    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; font-size: 14px; background: #f1f5f9; padding: 12px; border-radius: 6px; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+                    th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: left; }
+                    th { background-color: #e2e8f0; font-size: 12px; text-transform: uppercase; }
+                    .text-right { text-align: right; }
+                    .total-row { font-weight: bold; background-color: #f8fafc; }
+                    .net-salary-box { background-color: #dcfce7; border: 1px solid #86efac; color: #166534; padding: 15px; text-align: center; border-radius: 6px; font-size: 18px; font-weight: bold; }
+                    .print-btn { background-color: #2563eb; color: #fff; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; margin-top: 20px; display: block; width: 100%; }
+                    @media print { .print-btn { display: none; } }
+                </style>
+            </head>
+            <body>
+                <div class="payslip-card">
+                    <div class="header">
+                        <h2>KodeKrafters HRMS Platform</h2>
+                        <p>Confidential Monthly Salary Slip</p>
+                    </div>
+                    <div class="info-grid">
+                        <div><strong>Employee Name:</strong> ${empName}</div>
+                        <div><strong>Employee ID:</strong> #${empId}</div>
+                        <div><strong>Designation:</strong> ${designation}</div>
+                        <div><strong>Pay Period:</strong> Current Month</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Earnings</th>
+                                <th class="text-right">Amount (₹)</th>
+                                <th>Deductions</th>
+                                <th class="text-right">Amount (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Basic Salary</td>
+                                <td class="text-right">₹${basic}</td>
+                                <td>Provident Fund (PF)</td>
+                                <td class="text-right">₹${pf}</td>
+                            </tr>
+                            <tr>
+                                <td>House Rent Allowance (HRA)</td>
+                                <td class="text-right">₹${hra}</td>
+                                <td>Professional Tax (PT)</td>
+                                <td class="text-right">₹${pt}</td>
+                            </tr>
+                            <tr>
+                                <td>Dearness Allowance (DA)</td>
+                                <td class="text-right">₹${da}</td>
+                                <td>Income Tax (TDS 10%)</td>
+                                <td class="text-right">₹${tds}</td>
+                            </tr>
+                            <tr>
+                                <td>Special Allowance</td>
+                                <td class="text-right">₹${special}</td>
+                                <td>-</td>
+                                <td class="text-right">-</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Gross Earnings</td>
+                                <td class="text-right">₹${gross}</td>
+                                <td>Total Deductions</td>
+                                <td class="text-right">₹${totalDeductions}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="net-salary-box">
+                        Net Take Home Salary: ₹${netPay}
+                    </div>
+                    <button onclick="window.print()" class="print-btn">🖨️ Print / Save as PDF</button>
+                </div>
+            </body>
+            </html>
+        `);
+    }
+
+    // 5. Delete Salary
+    async function deleteSalary(id) {
+        if (confirm(`Are you sure you want to delete salary structure #${id}?`)) {
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    alert("Salary record deleted successfully!");
+                    fetchSalaries();
+                } else {
+                    alert("Failed to delete salary record.");
+                }
+            } catch (err) { alert("Error executing delete request."); }
+        }
+    }
+
+    // Modal Actions
+    function openSalaryModal(id, basic, hra, da, allowance, deductions) {
+        document.getElementById("editSalaryId").value = id;
+        document.getElementById("editBasic").value = basic;
+        document.getElementById("editHra").value = hra;
+        document.getElementById("editDa").value = da;
+        document.getElementById("editAllowance").value = allowance;
+        document.getElementById("editDeductions").value = deductions;
+        document.getElementById("salaryModal").style.display = "flex";
+    }
+
+    function closeModal() { document.getElementById("salaryModal").style.display = "none"; }
+
+    async function saveSalaryEdit() {
+        const id = document.getElementById("editSalaryId").value;
+        const updatedData = {
+            basicSalary: parseFloat(document.getElementById("editBasic").value) || 0,
+            hra: parseFloat(document.getElementById("editHra").value) || 0,
+            da: parseFloat(document.getElementById("editDa").value) || 0,
+            specialAllowance: parseFloat(document.getElementById("editAllowance").value) || 0,
+            pfEmployeeContribution: parseFloat(document.getElementById("editDeductions").value) || 0
+        };
+
+        try {
+            const res = await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (res.ok) {
+                alert("Salary details updated in DB!");
+                closeModal();
+                fetchSalaries();
+            } else { alert("Failed to update salary details."); }
+        } catch (err) { alert("Error sending update request."); }
+    }
+
+    fetchSalaries();
+    document.addEventListener('DOMContentLoaded', () => {
+    fetchDashboardMetrics();
+});
+
+async function fetchDashboardMetrics() {
+    try {
+        const response = await fetch('/api/v1/dashboard/metrics');
+        if (!response.ok) {
+            throw new Error('Failed to fetch metrics data');
+        }
+
+        const data = await response.json();
+
+        // Populate Data into UI
+        document.getElementById('metric-total-employees').textContent = data.totalEmployees || 0;
+
+        document.getElementById('metric-total-payroll').textContent = new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR'
+        }).format(data.totalPayrollCost || 0);
+
+        document.getElementById('metric-total-deductions').textContent = new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR'
+        }).format(data.totalStatutoryDeductions || 0);
+
+    } catch (error) {
+        console.error('Error fetching dashboard metrics:', error);
+    }
+}
+</script>
+</body>
+</html>

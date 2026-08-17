@@ -1,5 +1,6 @@
 package com.kodekrafters.hrms_payroll_platform.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,19 +12,21 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "attendance_records")
+@Table(name = "attendance_records", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_emp_date", columnNames = {"emp_id", "attendance_date"})
+})
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class AttendanceRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "emp_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Employee employee;
 
     @Column(name = "attendance_date", nullable = false)
@@ -43,6 +46,7 @@ public class AttendanceRecord {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "attendance_status", nullable = false)
+    @Builder.Default
     private AttendanceStatus attendanceStatus = AttendanceStatus.PRESENT;
 
     @Column(name = "created_at", updatable = false)
