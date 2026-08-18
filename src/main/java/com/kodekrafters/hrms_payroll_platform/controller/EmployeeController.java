@@ -30,6 +30,12 @@ public class EmployeeController {
         return employeeService.getAllEmployees();
     }
 
+    // ✨ Added Single Employee Fetch Endpoint
+    @GetMapping("/{id}")
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+        return ResponseEntity.ok(employeeService.getEmployeeById(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @RequestBody EmployeeDto dto)
     {

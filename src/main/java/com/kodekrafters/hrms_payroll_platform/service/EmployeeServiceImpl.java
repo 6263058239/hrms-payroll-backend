@@ -27,6 +27,12 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
+    public Employee getEmployeeById(Long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Employee Not Found With This ID:"+id));
+    }
+
+    @Override
     public Employee updateEmployee(Long id, EmployeeDto dto) {
         return employeeRepository.findById(id).map(emp -> {
             if (dto.getEmployeeName() != null) emp.setEmployeeName(dto.getEmployeeName());

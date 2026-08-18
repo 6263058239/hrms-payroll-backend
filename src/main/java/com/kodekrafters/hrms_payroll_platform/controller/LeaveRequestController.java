@@ -5,6 +5,7 @@ import com.kodekrafters.hrms_payroll_platform.service.LeaveRequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -58,8 +59,11 @@ public class LeaveRequestController {
     }
 
     // 5. Get All Pending Leaves for Admin/HR Dashboard
+    @GetMapping("/pending")
     public ResponseEntity<List<LeaveRequest>> getPendingLeaves(){
         List<LeaveRequest> pendingLeaves=leaveRequestService.getPendingLeaves();
         return ResponseEntity.ok(pendingLeaves);
     }
+
+
 }
