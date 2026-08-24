@@ -2,7 +2,11 @@ package com.kodekrafters.hrms_payroll_platform.service;
 
 import com.kodekrafters.hrms_payroll_platform.dto.EmployeeDto;
 import com.kodekrafters.hrms_payroll_platform.entity.Employee;
+import com.kodekrafters.hrms_payroll_platform.repository.AttendanceRecordRepository;
 import com.kodekrafters.hrms_payroll_platform.repository.EmployeeRepository;
+import com.kodekrafters.hrms_payroll_platform.repository.LeaveRequestRepository;
+import com.kodekrafters.hrms_payroll_platform.repository.MonthlyPayrollRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +14,11 @@ import java.util.List;
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
     private final EmployeeRepository employeeRepository;
+
     public EmployeeServiceImpl(EmployeeRepository employeeRepository)
     {
         this.employeeRepository=employeeRepository;
+
     }
 
 
@@ -45,7 +51,9 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
+    @Transactional
     public void deleteEmployee(Long id) {
         employeeRepository.deleteById(id);
+
     }
 }

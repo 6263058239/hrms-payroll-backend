@@ -2,6 +2,9 @@ package com.kodekrafters.hrms_payroll_platform.repository;
 
 import com.kodekrafters.hrms_payroll_platform.entity.MonthlyPayroll;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -14,5 +17,8 @@ public interface MonthlyPayrollRepository extends JpaRepository<MonthlyPayroll,L
     Optional<MonthlyPayroll> findByEmployeeEmpIdAndPayrollMonth(Long empId, LocalDate payrollMonth);
     // Grabs all historical payouts for a specific individual (perfect for an employee portal timeline)
     List<MonthlyPayroll> findByEmployeeEmpIdOrderByPayrollMonthDesc(Long empId);
+    @Modifying
+    @Query("DELETE FROM MonthlyPayroll mpr WHERE mpr.employee.empId = :empId")
+    void deleteByEmployee_EmpId(@Param("empId") Long empId);
 
 }

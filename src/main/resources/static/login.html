@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | KodeKrafters HRMS</title>
+    <!-- FontAwesome ke icons connection -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Split Pane Main Layout Wrapper */
+        .split-container {
+            display: flex;
+            width: 100%;
+            max-width: 1050px;
+            min-height: 600px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            margin: 20px;
+        }
+
+        .left-side {
+            flex: 1;
+            padding: 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: #ffffff;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto;
+        }
+
+        .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        .brand-header i {
+            color: #0066cc;
+        }
+
+        h2 {
+            font-size: 26px;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        /* Role Switcher Pill */
+        .role-switch {
+            display: flex;
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 20px;
+            gap: 4px;
+        }
+
+        .role-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .role-btn.active {
+            background-color: #0066cc;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 102, 204, 0.2);
+        }
+
+        /* Input Fields */
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: #0066cc;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .error-msg {
+            display: none;
+            color: #dc2626;
+            background-color: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-login:hover {
+            background-color: #0052a3;
+        }
+
+        /* Right Side Layout */
+        .right-side {
+            flex: 1.1;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+
+        .right-content {
+            max-width: 420px;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .right-side h1 {
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 15px;
+        }
+
+        .right-side p {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .graphic-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 18px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 102, 204, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 85%;
+            height: 100%;
+            background: #4ade80;
+        }
+
+        @media (max-width: 850px) {
+            .right-side {
+                display: none;
+            }
+            .split-container {
+                max-width: 480px;
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="split-container">
+    <!-- LEFT SIDE: Form with Role-Switching -->
+    <div class="left-side">
+        <div class="login-box">
+            <div class="brand-header">
+                <i class="fa-solid fa-laptop-code"></i>
+                <span>KodeKrafters</span>
+            </div>
+
+            <h2>Welcome Back</h2>
+            <p class="subtitle">Select your role to access your portal</p>
+
+            <!-- Role Selector -->
+            <div class="role-switch">
+                <button type="button" id="btnRoleEmp" class="role-btn active" onclick="setRole('EMPLOYEE')">Employee</button>
+                <button type="button" id="btnRoleAdmin" class="role-btn" onclick="setRole('ADMIN_HR')">HR / Manager</button>
+            </div>
+
+            <!-- Error Banner -->
+            <div id="errorBox" class="error-msg">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="errorText">Invalid credentials</span>
+            </div>
+
+            <form onsubmit="handleAuthLogin(event)">
+                <div class="input-group">
+                    <i class="fa-regular fa-envelope" id="userIcon"></i>
+                    <input type="text" id="userIdentifier" placeholder="Official Email or EMP ID (e.g. 1001)" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="userPassword" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="btn-login" id="submitBtn">Sign In to Portal</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE: Modern Branding -->
+    <div class="right-side">
+        <div class="right-content">
+            <div class="feature-badge">⚡ Enterprise HRMS Platform</div>
+            <h1>Effortless Attendance & Payroll Operations</h1>
+            <p>Real-time employee self-service punches, automated statutory compliance engines, and dynamic manager approvals built for scale.</p>
+
+            <div class="graphic-card">
+                <div class="card-row">
+                    <span><i class="fa-solid fa-circle-check" style="color: #4ade80;"></i> Active Employee Session</span>
+                    <strong style="color: #4ade80;">Verified</strong>
+                </div>
+                <div class="card-progress">
+                    <div class="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let activeRole = 'EMPLOYEE';
+
+    function setRole(role) {
+        activeRole = role;
+        const btnEmp = document.getElementById('btnRoleEmp');
+        const btnAdmin = document.getElementById('btnRoleAdmin');
+        const inputField = document.getElementById('userIdentifier');
+        const errorBox = document.getElementById('errorBox');
+        if (errorBox) errorBox.style.display = 'none';
+
+        if (role === 'EMPLOYEE') {
+            btnEmp.classList.add('active');
+            btnAdmin.classList.remove('active');
+            inputField.placeholder = "Official Email or EMP ID (e.g. 1001)";
+        } else {
+            btnAdmin.classList.add('active');
+            btnEmp.classList.remove('active');
+            inputField.placeholder = "HR / Manager Email (e.g. admin@company.com)";
+        }
+    }
+
+    async function handleAuthLogin(e) {
+        e.preventDefault();
+
+        const identifier = (document.getElementById('userIdentifier').value || '').trim().toLowerCase();
+        const enteredPassword = (document.getElementById('userPassword').value || '').trim();
+        const errorBox = document.getElementById('errorBox');
+        const errorText = document.getElementById('errorText');
+        errorBox.style.display = 'none';
+
+        // ⚡ 1. MASTER ADMIN BYPASS (Instant Access for HR/Manager)
+        if (activeRole === 'ADMIN_HR' && (identifier === 'admin@company.com' || identifier === 'admin')) {
+            if (enteredPassword === 'admin123') {
+                sessionStorage.setItem('loggedUserRole', 'ADMIN_HR');
+                sessionStorage.setItem('loggedEmpId', '0000');
+                sessionStorage.setItem('loggedEmpName', 'System Admin');
+                sessionStorage.setItem('loggedEmpDept', 'HR & Management');
+                window.location.href = 'employee-details.html';
+                return;
+            } else {
+                errorText.innerText = "Incorrect admin password. (Use: admin123)";
+                errorBox.style.display = 'block';
+                return;
+            }
+        }
+
+        // ⚡ 2. DATABASE EMPLOYEE / HR VALIDATION
+        try {
+            const res = await fetch('http://localhost:8080/api/v1/employees');
+            if (!res.ok) throw new Error("API Error");
+
+            const employees = await res.json();
+
+            // Match by Emp ID or Official Email
+            const user = employees.find(emp =>
+                String(emp.empId).trim() === identifier ||
+                (emp.officialEmail && emp.officialEmail.trim().toLowerCase() === identifier)
+            );
+
+            if (!user) {
+                errorText.innerText = "Invalid Official Email or EMP ID.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // Verify Password Match
+            const dbPassword = user.password || "Emp@123";
+            if (dbPassword !== enteredPassword) {
+                errorText.innerText = "Incorrect password. Please try again.";
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            // Verify Role Permission if logging into HR tab
+            if (activeRole === 'ADMIN_HR') {
+                const userDept = (user.department || '').toUpperCase();
+                const userDesig = (user.designation || '').toUpperCase();
+                const isHrAuthorized = userDept.includes('HR') || userDept.includes('ADMIN') || userDesig.includes('MANAGER') || userDesig.includes('HR');
+
+                if (!isHrAuthorized) {
+                    errorText.innerText = "Access Denied: This employee account does not have HR/Admin privileges.";
+                    errorBox.style.display = 'block';
+                    return;
+                }
+            }
+
+            // Save active session storage
+            sessionStorage.setItem('loggedUserRole', activeRole);
+            sessionStorage.setItem('loggedEmpId', user.empId);
+            sessionStorage.setItem('loggedEmpName', user.employeeName);
+            sessionStorage.setItem('loggedEmpDept', user.department || 'General');
+
+            // Role-Based Navigation
+            if (activeRole === 'ADMIN_HR') {
+                window.location.href = 'employee-details.html';
+            } else {
+                window.location.href = 'employee-portal.html';
+            }
+
+        } catch (err) {
+            console.error("Login verification error:", err);
+            errorText.innerText = "Unable to connect to database backend.";
+            errorBox.style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>

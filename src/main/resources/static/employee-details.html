@@ -84,6 +84,16 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .metric-card.interactive {
+            cursor: pointer;
+        }
+
+        .metric-card.interactive:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
         }
 
         .metric-label {
@@ -168,18 +178,6 @@
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        .status-unmarked {
-            background-color: rgba(148, 163, 184, 0.15);
-            color: #94a3b8;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-        }
-
-        .status-leave {
-            background-color: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
         /* Action Buttons */
         .action-btn {
             padding: 6px 12px;
@@ -190,17 +188,6 @@
             cursor: pointer;
             margin-right: 6px;
             transition: all 0.2s ease;
-        }
-
-        .btn-punch {
-            background-color: rgba(14, 165, 233, 0.2);
-            color: #38bdf8;
-            border: 1px solid rgba(14, 165, 233, 0.3);
-        }
-
-        .btn-punch:hover {
-            background-color: #0284c7;
-            color: #ffffff;
         }
 
         .btn-edit {
@@ -245,6 +232,11 @@
             max-width: 480px;
             padding: 24px;
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+        }
+
+        .modal-content-lg {
+            max-width: 850px;
+            width: 95%;
         }
 
         .modal-header {
@@ -312,72 +304,31 @@
 
         .btn-save:hover { background-color: #059669; }
 
-        /* Punch Box inside Modal */
-        .punch-box {
-            background-color: #0b132b;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 16px;
-        }
-
-        .punch-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .btn-punch-in {
-            flex: 1;
+        /* Approvals Badge & Buttons */
+        .btn-approve {
             background-color: #059669;
             color: #ffffff;
-            padding: 9px;
-            border-radius: 6px;
-            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 4px;
             border: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 4px;
+        }
+        .btn-approve:hover { background-color: #047857; }
+
+        .btn-reject {
+            background-color: #e11d48;
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: none;
+            font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
         }
-        .btn-punch-in:hover { background-color: #047857; }
-
-        .btn-punch-out {
-            flex: 1;
-            background-color: #d97706;
-            color: #ffffff;
-            padding: 9px;
-            border-radius: 6px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-        }
-        .btn-punch-out:hover { background-color: #b45309; }
-
-        .leave-chip-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .leave-chip {
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            padding: 8px;
-            border-radius: 6px;
-        }
-
-        .leave-chip-title {
-            font-size: 11px;
-            color: #94a3b8;
-            font-weight: 600;
-        }
-
-        .leave-chip-val {
-            font-size: 14px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-top: 2px;
-        }
+        .btn-reject:hover { background-color: #be123c; }
     </style>
 </head>
 <body>
@@ -388,7 +339,17 @@
             <h1>👥 Onboarded Employees Directory</h1>
             <p>Live employee records directly managed via PostgreSQL Database</p>
         </div>
-        <a href="onboarding.html" class="btn-add">+ Onboard New Employee</a>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="employee-portal.html" style="background-color: #059669; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">
+                👤 Employee Portal
+            </a>
+            <a href="salary-structure.html" style="background-color: #0284c7; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">
+                💵 Salary Structure
+            </a>
+            <a href="onboarding.html" class="btn-add" style="text-decoration: none;">
+                + Onboard New Employee
+            </a>
+        </div>
     </div>
 
     <!-- ⚡ Quick Attendance & Headcount Summary Cards -->
@@ -401,16 +362,22 @@
             <span class="metric-label">Present Today</span>
             <div class="metric-val" style="color: #34d399;" id="presentCount">--</div>
         </div>
-        <div class="metric-card">
-            <span class="metric-label">Pending Leaves</span>
+        <div class="metric-card interactive" onclick="openApprovalsModal()" title="Click to view & approve pending leaves">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="metric-label">Pending Leaves</span>
+                <span style="font-size: 10px; color: #fbbf24; background: rgba(245, 158, 11, 0.2); padding: 2px 6px; border-radius: 4px;">Click to Review</span>
+            </div>
             <div class="metric-val" style="color: #fbbf24;" id="leaveCount">0</div>
         </div>
     </div>
 
     <!-- ⚡ Search & Filter Controls -->
+    <!-- ⚡ Search & Filter Controls -->
     <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-        <input type="text" id="searchInput" onkeyup="filterEmployees()" placeholder="🔍 Search by Name, Email, or EMP ID..."
-               style="flex: 1; min-width: 250px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; color: #f8fafc; outline: none; font-size: 14px;">
+        <input type="search" id="searchInput" onkeyup="filterEmployees()"
+               placeholder="🔍 Search by Name, Email, or EMP ID..."
+               autocomplete="off" readonly onfocus="this.removeAttribute('readonly');"
+               style="flex: 1; min-width: 250px; background-color: #0f172a !important; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; color: #f8fafc !important; outline: none; font-size: 14px;">
 
         <select id="deptFilter" onchange="filterEmployees()"
                 style="background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 10px 14px; color: #f8fafc; outline: none; font-size: 14px;">
@@ -448,81 +415,37 @@
     </div>
 </div>
 
-<!-- ⚡ Attendance & Leave Control Modal -->
-<div id="attendanceModal" class="modal-overlay">
-    <div class="modal-content">
+<!-- ⚡ Manager Leave Approvals Modal -->
+<div id="approvalsModal" class="modal-overlay">
+    <div class="modal-content modal-content-lg">
         <div class="modal-header">
-            <span id="modalEmpTitle">Employee Attendance & Leave</span>
-            <button onclick="closeAttendanceModal()" style="background:none; border:none; color:#94a3b8; font-size:20px; cursor:pointer;">&times;</button>
+            <span>📋 Manager Leave Approvals</span>
+            <button onclick="closeApprovalsModal()" style="background:none; border:none; color:#94a3b8; font-size:20px; cursor:pointer;">&times;</button>
         </div>
 
-        <input type="hidden" id="activeEmpId">
-
-        <!-- Attendance Punch Box -->
-        <div class="punch-box">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase;">Punch Operations</span>
-                <span id="modalPunchStatusText" style="font-size:12px; color:#34d399; font-weight:bold;">● Active</span>
-            </div>
-
-            <div class="punch-actions">
-                <button onclick="submitCheckIn()" class="btn-punch-in">Check In</button>
-                <button onclick="submitCheckOut()" class="btn-punch-out">Check Out</button>
-            </div>
+        <div class="table-responsive" style="max-height: 350px; margin-bottom: 16px;">
+            <table>
+                <thead>
+                <tr>
+                    <th>Emp ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Dates</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+                </thead>
+                <tbody id="pendingLeavesTableBody">
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #94a3b8;">Loading pending requests...</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
 
-        <!-- Leave Balances Preview -->
-        <div class="leave-chip-grid">
-            <div class="leave-chip">
-                <div class="leave-chip-title">Casual</div>
-                <div class="leave-chip-val" id="clBalance">-- / 12</div>
-            </div>
-            <div class="leave-chip">
-                <div class="leave-chip-title">Sick</div>
-                <div class="leave-chip-val" id="slBalance">-- / 10</div>
-            </div>
-            <div class="leave-chip">
-                <div class="leave-chip-title">Earned</div>
-                <div class="leave-chip-val" id="elBalance">-- / 15</div>
-            </div>
-        </div>
-
-        <!-- Quick Apply Leave Form -->
-        <div style="border-top: 1px solid #334155; padding-top: 14px;">
-            <div style="font-size:13px; font-weight:600; color:#cbd5e1; margin-bottom: 8px;">Apply Leave Request</div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                <div>
-                    <label style="font-size:11px; color:#94a3b8;">Type</label>
-                    <select id="applyLeaveType" class="form-control" style="padding: 7px;">
-                        <option value="CASUAL">Casual</option>
-                        <option value="SICK">Sick</option>
-                        <option value="EARNED">Earned</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size:11px; color:#94a3b8;">Days</label>
-                    <input type="number" id="applyLeaveDays" class="form-control" style="padding: 7px;" value="1.0" step="0.5">
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
-                <div>
-                    <label style="font-size:11px; color:#94a3b8;">From Date</label>
-                    <input type="date" id="applyLeaveFrom" class="form-control" style="padding: 7px;">
-                </div>
-                <div>
-                    <label style="font-size:11px; color:#94a3b8;">To Date</label>
-                    <input type="date" id="applyLeaveTo" class="form-control" style="padding: 7px;">
-                </div>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 12px;">
-                <label style="font-size:11px; color:#94a3b8;">Reason</label>
-                <input type="text" id="applyLeaveReason" placeholder="Reason for leave..." class="form-control" style="padding: 7px;">
-            </div>
-
-            <button onclick="submitLeaveApplication()" class="btn-save" style="width: 100%; padding: 9px; font-size: 13px;">Submit Leave Application</button>
+        <div class="modal-footer">
+            <button onclick="closeApprovalsModal()" class="btn-cancel">Close</button>
         </div>
     </div>
 </div>
@@ -557,6 +480,11 @@
             <label>Designation</label>
             <input type="text" id="editDesig" class="form-control">
         </div>
+        <!-- ⚡ Optional Reset Password Field -->
+        <div class="form-group">
+            <label>Reset Password <span style="font-size: 11px; color: #94a3b8;">(Optional - leave blank to keep unchanged)</span></label>
+            <input type="password" id="editPassword" placeholder="Enter new password..." class="form-control">
+        </div>
 
         <div class="modal-footer">
             <button onclick="closeModal()" class="btn-cancel">Cancel</button>
@@ -567,37 +495,59 @@
 
 <script>
     const API_URL = "http://localhost:8080/api/v1/employees";
-    const ATTENDANCE_API = "http://localhost:8080/api/v1/attendance";
     const LEAVE_API = "http://localhost:8080/api/v1/leaves";
 
     let loadedEmployees = [];
 
+    // 1. Load All Employees to Directory
     async function fetchEmployees() {
-    try {
-        const res = await fetch(API_URL);
-        if (!res.ok) throw new Error("API Response Error");
+        try {
+            const res = await fetch(API_URL);
+            if (!res.ok) throw new Error("API Response Error");
 
-        loadedEmployees = await res.json();
-        const tbody = document.getElementById("employeeTableBody");
-        tbody.innerHTML = "";
+            loadedEmployees = await res.json();
+            const tbody = document.getElementById("employeeTableBody");
+            tbody.innerHTML = "";
 
-       // Ye dono lines aisi hi rahengi (Remove mat karna)
-document.getElementById("totalEmpCount").innerText = loadedEmployees.length || 0;
-document.getElementById("presentCount").innerText = loadedEmployees.length > 0 ? loadedEmployees.length : "0";
+            document.getElementById("totalEmpCount").innerText = loadedEmployees.length || 0;
+            document.getElementById("presentCount").innerText = loadedEmployees.length > 0 ? loadedEmployees.length : "0";
 
-// ✨ Bas inke theek neeche ye add kar do
-try {
-    const leaveRes = await fetch("http://localhost:8080/api/v1/leaves/pending");
-    if (leaveRes.ok) {
-        const pendingLeaves = await leaveRes.json();
-        document.getElementById("leaveCount").innerText = pendingLeaves.length;
-    } else {
-        document.getElementById("leaveCount").innerText = "0";
+            // Dynamic Pending Leave Count
+            await refreshPendingLeaveCount();
+
+            if (!loadedEmployees || loadedEmployees.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8;">No employees found in database.</td></tr>`;
+                return;
+            }
+
+            // Clean Table Rows (Only Edit & Delete Actions)
+            loadedEmployees.forEach(emp => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="emp-id">#${emp.empId}</td>
+                        <td style="font-weight: 600; color: #ffffff;">${emp.employeeName || '-'}</td>
+                        <td>${emp.officialEmail || '-'}</td>
+                        <td>${emp.contactNumber || '-'}</td>
+                        <td><span class="dept-badge">${emp.department || '-'}</span></td>
+                        <td>${emp.designation || '-'}</td>
+                        <td>
+                            <span class="status-badge status-present">● Present</span>
+                        </td>
+                        <td>
+                            <button onclick="openEditModal(${emp.empId}, '${emp.employeeName || ''}', '${emp.officialEmail || ''}', '${emp.contactNumber || ''}', '${emp.department || ''}', '${emp.designation || ''}')" class="action-btn btn-edit">Edit</button>
+                            <button onclick="deleteEmployee(${emp.empId})" class="action-btn btn-delete">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        } catch (err) {
+            console.error("Error loading employees:", err);
+            document.getElementById("employeeTableBody").innerHTML = `<tr><td colspan="8" style="text-align: center; color: #f43f5e;">Failed to load employees. Check Spring Boot logs.</td></tr>`;
+        }
     }
-} catch (e) {
-    document.getElementById("leaveCount").innerText = "0";
-}
-        // ✨ Dynamic Leave Count Fetch
+
+    // 2. Refresh Top Metric Badge
+    async function refreshPendingLeaveCount() {
         try {
             const leaveRes = await fetch(`${LEAVE_API}/pending`);
             if (leaveRes.ok) {
@@ -609,124 +559,78 @@ try {
         } catch (e) {
             document.getElementById("leaveCount").innerText = "0";
         }
-
-        if (!loadedEmployees || loadedEmployees.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8;">No employees found in database.</td></tr>`;
-            return;
-        }
-
-        loadedEmployees.forEach(emp => {
-            tbody.innerHTML += `
-                <tr>
-                    <td class="emp-id">#${emp.empId}</td>
-                    <td style="font-weight: 600; color: #ffffff;">${emp.employeeName || '-'}</td>
-                    <td>${emp.officialEmail || '-'}</td>
-                    <td>${emp.contactNumber || '-'}</td>
-                    <td><span class="dept-badge">${emp.department || '-'}</span></td>
-                    <td>${emp.designation || '-'}</td>
-                    <td>
-                        <span class="status-badge status-present">● Present</span>
-                    </td>
-                    <td>
-                        <button onclick="openAttendanceModal(${emp.empId}, '${emp.employeeName || ''}')" class="action-btn btn-punch">Punch / Leave</button>
-                        <button onclick="openEditModal(${emp.empId}, '${emp.employeeName || ''}', '${emp.officialEmail || ''}', '${emp.contactNumber || ''}', '${emp.department || ''}', '${emp.designation || ''}')" class="action-btn btn-edit">Edit</button>
-                        <button onclick="deleteEmployee(${emp.empId})" class="action-btn btn-delete">Delete</button>
-                    </td>
-                </tr>
-            `;
-        });
-    } catch (err) {
-        console.error("Error loading employees:", err);
-        document.getElementById("employeeTableBody").innerHTML = `<tr><td colspan="8" style="text-align: center; color: #f43f5e;">Failed to load employees. Check Spring Boot logs.</td></tr>`;
-    }
-}
-
-    /* Attendance & Leave Modal Logic */
-    function openAttendanceModal(empId, name) {
-        document.getElementById("activeEmpId").value = empId;
-        document.getElementById("modalEmpTitle").innerText = `${name} (#${empId})`;
-
-        // Defaults
-        const todayStr = new Date().toISOString().split('T')[0];
-        document.getElementById("applyLeaveFrom").value = todayStr;
-        document.getElementById("applyLeaveTo").value = todayStr;
-
-        // Modal Show
-        document.getElementById("attendanceModal").style.display = "flex";
     }
 
-    function closeAttendanceModal() {
-        document.getElementById("attendanceModal").style.display = "none";
+    // 3. Manager Approvals Modal Logic
+    async function openApprovalsModal() {
+        document.getElementById("approvalsModal").style.display = "flex";
+        await loadPendingLeavesList();
     }
 
-    async function submitCheckIn() {
-        const empId = document.getElementById("activeEmpId").value;
+    function closeApprovalsModal() {
+        document.getElementById("approvalsModal").style.display = "none";
+    }
+
+    async function loadPendingLeavesList() {
+        const tbody = document.getElementById("pendingLeavesTableBody");
         try {
-            const res = await fetch(`${ATTENDANCE_API}/check-in/${empId}`, { method: 'POST' });
-            if (res.ok) {
-                const data = await res.json();
-                alert(`✅ Check-in successful at ${data.checkInTime}`);
-                closeAttendanceModal();
-                fetchEmployees();
-            } else {
-                alert("❌ Check-in failed or already checked in for today.");
+            const res = await fetch(`${LEAVE_API}/pending`);
+            if (!res.ok) throw new Error("Fetch failed");
+
+            const pendingLeaves = await res.json();
+            tbody.innerHTML = "";
+
+            if (!pendingLeaves || pendingLeaves.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">No pending leave requests! All clear.</td></tr>`;
+                return;
             }
+
+            pendingLeaves.forEach(req => {
+                const empId = req.employee ? req.employee.empId : 'N/A';
+                const empName = req.employee ? req.employee.employeeName : 'Unknown';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="emp-id">#${empId}</td>
+                        <td style="font-weight: 600; color: #ffffff;">${empName}</td>
+                        <td><span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 3px 8px; border-radius: 4px; font-size: 11px;">${req.leaveType}</span></td>
+                        <td>${req.fromDate} to ${req.toDate}</td>
+                        <td style="font-weight: bold;">${req.numberOfDays}d</td>
+                        <td style="color: #94a3b8; max-width: 150px; overflow: hidden; text-overflow: ellipsis;" title="${req.reason}">${req.reason || '-'}</td>
+                        <td style="text-align: center;">
+                            <button onclick="handleLeaveAction(${req.id}, 'approve')" class="btn-approve">Approve</button>
+                            <button onclick="handleLeaveAction(${req.id}, 'reject')" class="btn-reject">Reject</button>
+                        </td>
+                    </tr>
+                `;
+            });
         } catch (e) {
-            alert("Error sending check-in request.");
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #f43f5e;">Failed to load pending leaves.</td></tr>`;
         }
     }
 
-    async function submitCheckOut() {
-        const empId = document.getElementById("activeEmpId").value;
-        try {
-            const res = await fetch(`${ATTENDANCE_API}/check-out/${empId}`, { method: 'POST' });
-            if (res.ok) {
-                const data = await res.json();
-                alert(`✅ Check-out recorded! Total hours worked: ${data.totalHoursWorked || 0} hrs`);
-                closeAttendanceModal();
-                fetchEmployees();
-            } else {
-                alert("❌ Check-out failed. Ensure check-in exists for today.");
-            }
-        } catch (e) {
-            alert("Error sending check-out request.");
-        }
-    }
-
-    async function submitLeaveApplication() {
-        const empId = document.getElementById("activeEmpId").value;
-        const payload = {
-            leaveType: document.getElementById("applyLeaveType").value,
-            fromDate: document.getElementById("applyLeaveFrom").value,
-            toDate: document.getElementById("applyLeaveTo").value,
-            numberOfDays: parseFloat(document.getElementById("applyLeaveDays").value),
-            reason: document.getElementById("applyLeaveReason").value
-        };
-
-        if (!payload.reason) {
-            alert("Please specify a reason for the leave request.");
-            return;
-        }
+    async function handleLeaveAction(leaveId, action) {
+        const approverEmpId = (loadedEmployees.length > 0 && loadedEmployees[0].empId) ? loadedEmployees[0].empId : 1001;
+        const remarks = action === 'approve' ? 'Approved by Manager' : 'Rejected';
 
         try {
-            const res = await fetch(`${LEAVE_API}/apply/${empId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+            const res = await fetch(`${LEAVE_API}/${leaveId}/${action}?approverEmpId=${approverEmpId}&remarks=${encodeURIComponent(remarks)}`, {
+                method: 'POST'
             });
 
             if (res.ok) {
-                alert("✅ Leave applied successfully! Pending approval.");
-                closeAttendanceModal();
+                alert(`✅ Leave request successfully ${action}d!`);
+                await loadPendingLeavesList();
+                await refreshPendingLeaveCount();
             } else {
-                alert("❌ Leave application failed. Check date overlaps or quota.");
+                alert(`❌ Action failed for leave #${leaveId}`);
             }
         } catch (e) {
-            alert("Error applying for leave.");
+            alert("Error processing leave action.");
         }
     }
 
-    /* Delete Employee */
+    // 4. Delete Employee Record
     async function deleteEmployee(id) {
         if (confirm(`Are you sure you want to delete employee #${id}?`)) {
             try {
@@ -743,7 +647,7 @@ try {
         }
     }
 
-    /* Edit Modal Logic */
+    // 5. Edit Employee Modal Logic
     function openEditModal(id, name, email, phone, dept, desig) {
         document.getElementById("editId").value = id;
         document.getElementById("editName").value = name;
@@ -751,6 +655,7 @@ try {
         document.getElementById("editPhone").value = phone;
         document.getElementById("editDept").value = dept;
         document.getElementById("editDesig").value = desig;
+        document.getElementById("editPassword").value = ""; // Reset input
         document.getElementById("editModal").style.display = "flex";
     }
 
@@ -760,6 +665,8 @@ try {
 
     async function saveEdit() {
         const id = document.getElementById("editId").value;
+        const newPassword = document.getElementById("editPassword").value.trim();
+
         const updatedData = {
             employeeName: document.getElementById("editName").value,
             officialEmail: document.getElementById("editEmail").value,
@@ -767,6 +674,11 @@ try {
             department: document.getElementById("editDept").value,
             designation: document.getElementById("editDesig").value
         };
+
+        // Agar user ne password type kiya hai toh hi payload me jayega
+        if (newPassword.length > 0) {
+            updatedData.password = newPassword;
+        }
 
         try {
             const res = await fetch(`${API_URL}/${id}`, {
@@ -787,6 +699,7 @@ try {
         }
     }
 
+    // 6. Search & Department Filters
     function filterEmployees() {
         const searchVal = document.getElementById("searchInput").value.toLowerCase();
         const selectedDept = document.getElementById("deptFilter").value.toUpperCase();
@@ -808,7 +721,10 @@ try {
             }
         });
     }
-
+setTimeout(() => {
+        const searchBox = document.getElementById("searchInput");
+        if (searchBox) searchBox.value = "";
+    }, 100);
     fetchEmployees();
 </script>
 </body>

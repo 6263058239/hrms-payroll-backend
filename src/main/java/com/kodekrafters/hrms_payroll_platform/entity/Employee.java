@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "employees")
@@ -33,6 +34,9 @@ public class Employee {
 
     @Column(name = "gender")
     private String gender; // MALE, FEMALE, OTHER
+
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "marital_status")
     private String maritalStatus;
@@ -142,6 +146,22 @@ public class Employee {
     @JsonIgnore
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     private SalaryStructure salaryStructure;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LeaveRequest> leaveRequests;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AttendanceRecord> attendanceRecords;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LeaveBalance> leaveBalances;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MonthlyPayroll> monthlyPayrollRecords;
 
 
     // ==========================================

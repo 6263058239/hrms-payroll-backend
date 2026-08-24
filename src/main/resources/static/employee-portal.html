@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Self-Service Portal - HRMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .navbar h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .btn-signout {
+            background: rgba(225, 29, 72, 0.2);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-signout:hover {
+            background: #e11d48;
+            color: #ffffff;
+        }
+
+        /* Identity Banner */
+        .user-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+
+        /* Dashboard Grid Layout */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 850px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Clock & Attendance Punch */
+        .clock-display {
+            font-size: 32px;
+            font-weight: 800;
+            color: #38bdf8;
+            font-family: monospace;
+            text-align: center;
+            margin: 10px 0 20px 0;
+        }
+
+        .punch-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-punch-in {
+            background-color: #059669;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-punch-in:hover { background-color: #047857; }
+
+        .btn-punch-out {
+            background-color: #d97706;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-punch-out:hover { background-color: #b45309; }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 9px 12px;
+            color: #f8fafc;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #38bdf8;
+        }
+
+        .btn-submit-leave {
+            width: 100%;
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 11px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-submit-leave:hover { background-color: #1d4ed8; }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        thead {
+            background-color: #020617;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        th, td {
+            padding: 12px 14px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #334155;
+        }
+
+        /* Status Pills */
+        .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .badge-approved { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-rejected { background: rgba(225, 29, 72, 0.2); color: #f43f5e; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Navbar with Working Logout -->
+    <div class="navbar">
+        <h1>👤 Employee Self-Service (ESS)</h1>
+        <div class="nav-links">
+            <button onclick="handleLogout()" class="btn-signout">
+                🚪 Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Logged-in User Identity Display -->
+    <div class="user-card">
+        <span style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Logged In As:</span>
+        <h2 id="empNameHeader" style="font-size: 18px; margin-top: 2px; color: #ffffff;">Loading profile...</h2>
+    </div>
+
+    <div class="grid-2">
+        <!-- 1. Attendance Punch Card -->
+        <div class="card">
+            <div class="card-title">🕒 Real-Time Attendance Punch</div>
+            <div class="clock-display" id="liveClock">00:00:00</div>
+            <p style="text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 20px;">
+                Recorded against daily office shift. Check-in once daily.
+            </p>
+
+            <div class="punch-grid">
+                <button onclick="submitCheckIn()" class="btn-punch-in">Check In</button>
+                <button onclick="submitCheckOut()" class="btn-punch-out">Check Out</button>
+            </div>
+        </div>
+
+        <!-- 2. Apply Leave Card -->
+        <div class="card">
+            <div class="card-title">📝 Apply for Leave</div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+                <div class="form-group">
+                    <label>Leave Type</label>
+                    <select id="leaveType" class="form-control">
+                        <option value="CASUAL">Casual Leave</option>
+                        <option value="SICK">Sick Leave</option>
+                        <option value="EARNED_ANNUAL">Earned / Annual Leave</option>
+                        <option value="UNPAID_LOP">Unpaid LOP</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Total Days</label>
+                    <input type="number" id="leaveDays" class="form-control" value="1.0" step="0.5">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+                <div class="form-group">
+                    <label>From Date</label>
+                    <input type="date" id="leaveFrom" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>To Date</label>
+                    <input type="date" id="leaveTo" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Reason</label>
+                <input type="text" id="leaveReason" placeholder="Specify reason..." class="form-control">
+            </div>
+
+            <button onclick="submitLeave()" class="btn-submit-leave">Submit to Manager</button>
+        </div>
+    </div>
+
+    <!-- ⚡ 3. Payslip View & Download Card -->
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <span>📄 Monthly Payslips & Tax Breakup</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <select id="payslipMonth" class="form-control" style="width: auto; padding: 6px 12px; font-size: 13px;">
+                    <option value="August 2026" selected>August 2026</option>
+                    <option value="July 2026">July 2026</option>
+                    <option value="June 2026">June 2026</option>
+                </select>
+                <button onclick="viewEmployeePayslip()" style="background: #0284c7; color: #fff; border: none; padding: 7px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                    👁️ View Payslip
+                </button>
+            </div>
+        </div>
+        <p style="font-size: 12px; color: #94a3b8;">
+            View itemized earnings, statutory PF/PT/TDS deductions, and download official monthly salary slips.
+        </p>
+    </div>
+
+    <!-- 4. Leave Application History Table -->
+    <div class="card">
+        <div class="card-title">📋 My Leave Applications & Approval Status</div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Dates</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th>Manager Status</th>
+                    <th>Remarks</th>
+                </tr>
+                </thead>
+                <tbody id="myLeavesTableBody">
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #94a3b8;">Loading leave records...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 🌟 PRINTABLE PAYSLIP MODAL POPUP -->
+<div id="payslipModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
+    <div style="background: #ffffff; color: #0f172a; width: 100%; max-width: 700px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+
+        <!-- Modal Actions Header -->
+        <div style="background: #0f172a; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: #ffffff; font-weight: 700; font-size: 15px;">Salary Statement Preview</span>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="printPayslipSlip()" style="background: #16a34a; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">🖨️ Print / Save PDF</button>
+                <button onclick="closePayslipModal()" style="background: #e2e8f0; color: #334155; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">✕ Close</button>
+            </div>
+        </div>
+
+        <!-- Printable Slip Content -->
+        <div id="printableSlipArea" style="padding: 28px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px;">
+                <div>
+                    <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">KodeKrafters Pvt. Ltd.</h2>
+                    <p style="font-size: 12px; color: #64748b;">Enterprise IT Solutions & HR Services</p>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: 14px; font-weight: 700; color: #0284c7;" id="slipMonthLabel">MONTHLY PAYSLIP</span>
+                    <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Status: <strong style="color: #16a34a;">PAID</strong></p>
+                </div>
+            </div>
+
+            <!-- Employee Basic Details Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 12px; margin-bottom: 18px; border: 1px solid #e2e8f0;">
+                <div><strong>Emp ID:</strong> <span id="slipEmpId">-</span></div>
+                <div><strong>Employee Name:</strong> <span id="slipEmpName">-</span></div>
+                <div><strong>Department:</strong> <span id="slipEmpDept">-</span></div>
+                <div><strong>Bank Name:</strong> <span id="slipBankName">-</span></div>
+                <div><strong>A/C No:</strong> <span id="slipAccNo">-</span></div>
+                <div><strong>PAN No:</strong> <span id="slipPanNo">-</span></div>
+            </div>
+
+            <!-- Breakdown Table -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
+                <!-- Earnings -->
+                <table style="width: 100%; font-size: 12px; border-collapse: collapse; border: 1px solid #e2e8f0;">
+                    <thead>
+                    <tr style="background: #f1f5f9; color: #334155;"><th style="padding: 8px; text-align: left;">Earnings</th><th style="padding: 8px; text-align: right;">Amount (₹)</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">Basic Salary</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipBasic">0.00</td></tr>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">HRA</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipHra">0.00</td></tr>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">DA</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipDa">0.00</td></tr>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">Special Allowance</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipSpl">0.00</td></tr>
+                    <tr style="font-weight: 700; background: #f8fafc;"><td style="padding: 8px;">Gross Earnings</td><td style="padding: 8px; text-align: right; color: #0284c7;" id="slipGross">0.00</td></tr>
+                    </tbody>
+                </table>
+
+                <!-- Deductions -->
+                <table style="width: 100%; font-size: 12px; border-collapse: collapse; border: 1px solid #e2e8f0;">
+                    <thead>
+                    <tr style="background: #f1f5f9; color: #334155;"><th style="padding: 8px; text-align: left;">Deductions</th><th style="padding: 8px; text-align: right;">Amount (₹)</th></tr>
+                    </thead>
+                    <tbody>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">PF Employee Contrib.</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipPf">0.00</td></tr>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">Professional Tax (PT)</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipPt">0.00</td></tr>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">Income Tax (TDS)</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipTds">0.00</td></tr>
+                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">-</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;">-</td></tr>
+                    <tr style="font-weight: 700; background: #f8fafc;"><td style="padding: 8px;">Total Deductions</td><td style="padding: 8px; text-align: right; color: #dc2626;" id="slipDeductions">0.00</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Net Take-Home Highlight -->
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 12px 18px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 14px; font-weight: 700; color: #1e3a8a;">NET PAYABLE AMOUNT:</span>
+                <span style="font-size: 20px; font-weight: 800; color: #15803d;" id="slipNetSalary">₹0.00</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const ATTENDANCE_API = "http://localhost:8080/api/v1/attendance";
+    const LEAVE_API = "http://localhost:8080/api/v1/leaves";
+
+    // Read identity directly from Login Session
+    let currentEmpId = sessionStorage.getItem('loggedEmpId');
+    let currentEmpName = sessionStorage.getItem('loggedEmpName');
+    let currentEmpDept = sessionStorage.getItem('loggedEmpDept');
+
+    function handleLogout() {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+
+    // Live Clock
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('liveClock').innerText = now.toLocaleTimeString();
+    }, 1000);
+
+    async function initPortal() {
+        if (!currentEmpId) {
+            alert("Please sign in first to access your portal.");
+            window.location.href = 'login.html';
+            return;
+        }
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById("leaveFrom").value = todayStr;
+        document.getElementById("leaveTo").value = todayStr;
+
+        // Set logged-in identity header
+        document.getElementById("empNameHeader").innerText = `#${currentEmpId} - ${currentEmpName || 'Employee'} (${currentEmpDept || 'General'})`;
+
+        await loadMyLeaves();
+    }
+
+    async function submitCheckIn() {
+        if (!currentEmpId) return;
+        try {
+            const res = await fetch(`${ATTENDANCE_API}/check-in/${currentEmpId}`, { method: 'POST' });
+            if (res.ok) {
+                const data = await res.json();
+                alert(`✅ Check-in recorded at ${data.checkInTime}`);
+            } else {
+                alert("❌ Check-in failed or already recorded for today.");
+            }
+        } catch (e) {
+            alert("Punch service error.");
+        }
+    }
+
+    async function submitCheckOut() {
+        if (!currentEmpId) return;
+        try {
+            const res = await fetch(`${ATTENDANCE_API}/check-out/${currentEmpId}`, { method: 'POST' });
+            if (res.ok) {
+                const data = await res.json();
+                alert(`✅ Check-out recorded! Total hours: ${data.totalHoursWorked || 0} hrs`);
+            } else {
+                alert("❌ Check-out failed. Ensure check-in exists for today.");
+            }
+        } catch (e) {
+            alert("Punch service error.");
+        }
+    }
+
+    async function submitLeave() {
+        const payload = {
+            leaveType: document.getElementById("leaveType").value,
+            fromDate: document.getElementById("leaveFrom").value,
+            toDate: document.getElementById("leaveTo").value,
+            numberOfDays: parseFloat(document.getElementById("leaveDays").value),
+            reason: document.getElementById("leaveReason").value
+        };
+
+        if (!payload.reason) {
+            alert("Please enter a reason for leave.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${LEAVE_API}/apply/${currentEmpId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert("✅ Leave request submitted to manager!");
+                document.getElementById("leaveReason").value = "";
+                await loadMyLeaves();
+            } else {
+                alert("❌ Leave application rejected (Overlap check or quota exceeded).");
+            }
+        } catch (e) {
+            alert("Error sending leave request.");
+        }
+    }
+
+    async function loadMyLeaves() {
+        if (!currentEmpId) return;
+        const tbody = document.getElementById("myLeavesTableBody");
+        try {
+            const res = await fetch(`${LEAVE_API}/employee/${currentEmpId}`);
+            const leaves = await res.json();
+            tbody.innerHTML = "";
+
+            if (!leaves || leaves.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 14px;">No leave requests found for this employee.</td></tr>`;
+                return;
+            }
+
+            leaves.forEach(l => {
+                let badgeClass = "badge-pending";
+                if (l.approvalStatus === "APPROVED") badgeClass = "badge-approved";
+                if (l.approvalStatus === "REJECTED") badgeClass = "badge-rejected";
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${l.leaveType}</strong></td>
+                        <td>${l.fromDate} to ${l.toDate}</td>
+                        <td>${l.numberOfDays}d</td>
+                        <td>${l.reason || '-'}</td>
+                        <td><span class="badge ${badgeClass}">${l.approvalStatus}</span></td>
+                        <td style="color: #94a3b8;">${l.approverRemarks || '-'}</td>
+                    </tr>
+                `;
+            });
+        } catch (e) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #f43f5e;">Failed to load leave history.</td></tr>`;
+        }
+    }
+
+    // ⚡ PAYSLIP MODAL LOGIC
+    async function viewEmployeePayslip() {
+        if (!currentEmpId) return;
+
+        const selectedMonth = document.getElementById('payslipMonth').value;
+        document.getElementById('slipMonthLabel').innerText = `PAYSLIP - ${selectedMonth.toUpperCase()}`;
+
+        try {
+            // 1. Fetch all salary structures and match current employee
+            const salRes = await fetch('http://localhost:8080/api/v1/salary-structures');
+            if (!salRes.ok) {
+                alert("Salary structure not yet configured for this employee.");
+                return;
+            }
+            const allStructures = await salRes.json();
+
+            // Match by employee object or direct empId
+            const salData = allStructures.find(s =>
+                (s.employee && String(s.employee.empId) === String(currentEmpId)) ||
+                (s.empId && String(s.empId) === String(currentEmpId))
+            );
+
+            if (!salData) {
+                alert("Salary structure not yet configured for this employee.");
+                return;
+            }
+
+            // 2. Fetch Employee Profile details
+            const empRes = await fetch(`http://localhost:8080/api/v1/employees/${currentEmpId}`);
+            const empData = empRes.ok ? await empRes.json() : {};
+
+            // 3. Map details to Modal fields
+            document.getElementById('slipEmpId').innerText = `#${currentEmpId}`;
+            document.getElementById('slipEmpName').innerText = empData.employeeName || currentEmpName || '-';
+            document.getElementById('slipEmpDept').innerText = empData.department || currentEmpDept || '-';
+            document.getElementById('slipBankName').innerText = empData.bankName || 'State Bank of India';
+            document.getElementById('slipAccNo').innerText = empData.accountNumber || 'XXXXXXXXXX';
+            document.getElementById('slipPanNo').innerText = empData.panNumber || '-';
+
+            const basic = parseFloat(salData.basicSalary) || 0;
+            const hra = parseFloat(salData.hra) || 0;
+            const da = parseFloat(salData.da) || 0;
+            const spl = parseFloat(salData.specialAllowance) || 0;
+            const gross = basic + hra + da + spl;
+
+            const pf = parseFloat(salData.pfEmployeeContribution) || 0;
+            const pt = parseFloat(salData.professionalTax) || 0;
+            const tds = parseFloat(salData.tdsIncomeTax) || 0;
+            const totalDeductions = pf + pt + tds;
+            const netSalary = gross - totalDeductions;
+
+            document.getElementById('slipBasic').innerText = basic.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById('slipHra').innerText = hra.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById('slipDa').innerText = da.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById('slipSpl').innerText = spl.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById('slipGross').innerText = gross.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+            document.getElementById('slipPf').innerText = pf.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById('slipPt').innerText = pt.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById('slipTds').innerText = tds.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+            document.getElementById('slipDeductions').innerText = totalDeductions.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+
+            document.getElementById('slipNetSalary').innerText = `₹${netSalary.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+
+            // Open Modal
+            document.getElementById('payslipModal').style.display = 'flex';
+
+        } catch (e) {
+            console.error("Payslip loading error", e);
+            alert("Error generating payslip preview.");
+        }
+    }
+
+    function closePayslipModal() {
+        document.getElementById('payslipModal').style.display = 'none';
+    }
+
+    function printPayslipSlip() {
+        const printContents = document.getElementById('printableSlipArea').innerHTML;
+        const printWindow = window.open('', '', 'height=700,width=800');
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Employee Payslip</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #0f172a; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                        th, td { border: 1px solid #cbd5e1; padding: 8px; font-size: 13px; }
+                        th { background-color: #f1f5f9; }
+                    </style>
+                </head>
+                <body>${printContents}</body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 300);
+    }
+
+    initPortal();
+</script>
+</body>
+</html>

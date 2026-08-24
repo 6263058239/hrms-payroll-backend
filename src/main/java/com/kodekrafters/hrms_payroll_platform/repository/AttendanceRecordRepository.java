@@ -2,6 +2,9 @@ package com.kodekrafters.hrms_payroll_platform.repository;
 
 import com.kodekrafters.hrms_payroll_platform.entity.AttendanceRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -19,4 +22,8 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
             Long empId, LocalDate startDate, LocalDate endDate, AttendanceRecord.AttendanceStatus status);
 
     Optional<AttendanceRecord> findByEmployee_EmpIdAndAttendanceDate(Long empId, LocalDate attendanceDate);
+    // ✨ Cascade deletion method
+    @Modifying
+    @Query("DELETE FROM AttendanceRecord ar WHERE ar.employee.empId = :empId")
+    void deleteByEmployee_EmpId(@Param("empId") Long empId);
 }
