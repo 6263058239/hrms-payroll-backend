@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Separation & F&F Console - HRMS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .navbar h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .btn-action {
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 16px 20px;
+        }
+
+        .stat-card span {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-card h3 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 6px;
+        }
+
+        /* Table */
+        .card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        thead {
+            background-color: #020617;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        th, td {
+            padding: 14px 16px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #334155;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .badge-cleared { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+        .btn-manage {
+            background-color: #8b5cf6;
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-manage:hover {
+            background-color: #7c3aed;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            width: 100%;
+            max-width: 580px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background-color: #0f172a;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #f8fafc;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: #38bdf8;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Unified Admin Navbar */
+.admin-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+.admin-nav-brand {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.admin-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.nav-item {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.nav-item:hover {
+    color: #f8fafc;
+    background-color: #334155;
+}
+.nav-item.active {
+    color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+.nav-item.btn-portal {
+    background-color: #059669;
+    color: #ffffff;
+}
+.nav-item.btn-portal:hover {
+    background-color: #047857;
+}
+    </style>
+</head>
+<body>
+<nav class="admin-navbar">
+    <div class="admin-nav-brand">
+        ⚡ <span>HRMS Admin Console</span>
+    </div>
+    <div class="admin-nav-links">
+        <a href="employee-details.html" class="nav-item">👥 Directory</a>
+        <a href="salary-structure.html" class="nav-item">💰 Payroll & CTC</a>
+        <a href="helpdesk-admin.html" class="nav-item">🎫 Helpdesk Queue</a>
+        <a href="exit-admin.html" class="nav-item active">🚪 Offboarding</a>
+        <a href="employee-portal.html" target="_blank" class="nav-item btn-portal">👤 ESS Portal ↗</a>
+    </div>
+</nav>
+<div class="container">
+    <div class="navbar">
+        <h1>🚪 Employee Exit & Separation Management</h1>
+        <button onclick="fetchAllExits()" class="btn-action">🔄 Refresh Separation Queue</button>
+    </div>
+
+    <!-- Live Counters -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total Separations</span>
+            <h3 id="statTotalExits" style="color: #ffffff;">0</h3>
+        </div>
+        <div class="stat-card">
+            <span>In Notice Period</span>
+            <h3 id="statInNotice" style="color: #fbbf24;">0</h3>
+        </div>
+        <div class="stat-card">
+            <span>Pending Clearances</span>
+            <h3 id="statPendingClearance" style="color: #f43f5e;">0</h3>
+        </div>
+        <div class="stat-card">
+            <span>Settled / Relieved</span>
+            <h3 id="statSettled" style="color: #34d399;">0</h3>
+        </div>
+    </div>
+
+    <!-- Exits Table -->
+    <div class="card">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>Exit ID</th>
+                    <th>Employee</th>
+                    <th>Exit Type</th>
+                    <th>Resigned On</th>
+                    <th>Last Working Day</th>
+                    <th>Clearance Status</th>
+                    <th>F&F Settlement</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="exitQueueBody">
+                <tr>
+                    <td colspan="8" style="text-align: center; color: #94a3b8; padding: 20px;">Loading separations...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Clearance & F&F Settlement -->
+<div id="settlementModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 style="font-size: 16px; font-weight: 700;" id="modalExitTitle">Process F&F Settlement</h3>
+            <button onclick="closeSettlementModal()" style="background: transparent; border: none; color: #94a3b8; font-size: 16px; cursor: pointer;">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="actionExitId">
+
+            <div style="background: #0f172a; padding: 12px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; border: 1px solid #334155;">
+                <p id="modalEmpInfo" style="color: #38bdf8; font-weight: 600;"></p>
+                <p id="modalDates" style="color: #94a3b8; margin-top: 4px;"></p>
+            </div>
+
+            <h4 style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">1. Operational Clearances</h4>
+            <div style="display: flex; gap: 20px; margin-bottom: 16px; background: #0f172a; padding: 12px; border-radius: 6px; border: 1px solid #334155;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" id="checkAssetClearance"> Laptop / Asset Recovered
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" id="checkNoDues"> Departmental No-Dues Cleared
+                </label>
+            </div>
+
+            <h4 style="font-size: 13px; color: #cbd5e1; margin-bottom: 10px;">2. Full & Final (F&F) Financials</h4>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Pending Salary (₹)</label>
+                    <input type="number" id="inputPendingSalary" class="form-control" value="0.00" oninput="calculateNetSettlement()">
+                </div>
+                <div class="form-group">
+                    <label>Leave Encashment (₹)</label>
+                    <input type="number" id="inputLeaveEncash" class="form-control" value="0.00" oninput="calculateNetSettlement()">
+                </div>
+                <div class="form-group">
+                    <label>Gratuity Amount (₹)</label>
+                    <input type="number" id="inputGratuity" class="form-control" value="0.00" oninput="calculateNetSettlement()">
+                </div>
+                <div class="form-group">
+                    <label>Notice Shortfall Deduction (₹)</label>
+                    <input type="number" id="inputShortfall" class="form-control" value="0.00" oninput="calculateNetSettlement()">
+                </div>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 12px 16px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 16px;">
+                <strong style="font-size: 13px; color: #cbd5e1;">Net Payable F&F Amount:</strong>
+                <strong id="computedNetFnF" style="color: #34d399; font-size: 17px;">₹0.00</strong>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="closeSettlementModal()" style="background: #334155; color: #fff; border: none; padding: 9px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;">Cancel</button>
+                <button onclick="submitSettlementDetails()" class="btn-action" style="background: #059669;">💾 Finalize & Save Settlement</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const EXIT_API = "http://localhost:8080/api/v1/exits";
+    let exitRecords = [];
+
+    async function fetchAllExits() {
+        try {
+            const res = await fetch(`${EXIT_API}/all`);
+            if (!res.ok) throw new Error("HTTP error " + res.status);
+            exitRecords = await res.json();
+            updateCounters();
+            renderExitTable();
+        } catch (e) {
+            document.getElementById("exitQueueBody").innerHTML = `<tr><td colspan="8" style="text-align: center; color: #f43f5e; padding: 20px;">Failed to load separation queue.</td></tr>`;
+        }
+    }
+
+    function updateCounters() {
+        document.getElementById("statTotalExits").innerText = exitRecords.length;
+        document.getElementById("statInNotice").innerText = exitRecords.filter(e => !e.assetClearanceDone || !e.noDuesCleared).length;
+        document.getElementById("statPendingClearance").innerText = exitRecords.filter(e => !e.assetClearanceDone || !e.noDuesCleared).length;
+        document.getElementById("statSettled").innerText = exitRecords.filter(e => e.assetClearanceDone && e.noDuesCleared).length;
+    }
+
+    function renderExitTable() {
+        const tbody = document.getElementById("exitQueueBody");
+        tbody.innerHTML = "";
+
+        if (exitRecords.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #94a3b8; padding: 20px;">No separation requests found.</td></tr>`;
+            return;
+        }
+
+        exitRecords.forEach(e => {
+            const empName = e.employee ? `#${e.employee.empId} - ${e.employee.employeeName}` : '-';
+            const dept = e.employee ? (e.employee.department || '-') : '-';
+
+            const isFullyCleared = e.assetClearanceDone && e.noDuesCleared;
+            const clearanceBadge = isFullyCleared
+                ? `<span class="badge badge-cleared">All Cleared</span>`
+                : `<span class="badge badge-pending">Pending</span>`;
+
+            const fnfText = e.finalSettlementAmount !== null && e.finalSettlementAmount !== undefined
+                ? "₹" + Number(e.finalSettlementAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })
+                : "₹0.00";
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>#EX-${e.id}</strong></td>
+                    <td>
+                        <strong>${empName}</strong>
+                        <div style="font-size: 11px; color: #94a3b8;">${dept}</div>
+                    </td>
+                    <td><span style="color: #38bdf8; font-weight: 600;">${e.exitType}</span></td>
+                    <td>${e.resignationDate || '-'}</td>
+                    <td><strong style="color: #f8fafc;">${e.lastWorkingDay || '-'}</strong></td>
+                    <td>${clearanceBadge}</td>
+                    <td><strong style="color: #34d399;">${fnfText}</strong></td>
+                    <td>
+                        <button onclick="openSettlementModal(${e.id})" class="btn-manage">⚙️ Settlement</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function openSettlementModal(exitId) {
+        const exit = exitRecords.find(e => e.id === exitId);
+        if (!exit) return;
+
+        document.getElementById("actionExitId").value = exit.id;
+        document.getElementById("modalExitTitle").innerText = `Manage Settlement for Separation #EX-${exit.id}`;
+        document.getElementById("modalEmpInfo").innerText = `Employee: #${exit.employee?.empId || '-'} ${exit.employee?.employeeName || '-'}`;
+        document.getElementById("modalDates").innerText = `Resigned: ${exit.resignationDate || '-'} | Last Working Day: ${exit.lastWorkingDay || '-'}`;
+
+        document.getElementById("checkAssetClearance").checked = Boolean(exit.assetClearanceDone);
+        document.getElementById("checkNoDues").checked = Boolean(exit.noDuesCleared);
+
+        document.getElementById("inputPendingSalary").value = exit.pendingSalaryAmount || 0;
+        document.getElementById("inputLeaveEncash").value = exit.leaveEncashmentAmount || 0;
+        document.getElementById("inputGratuity").value = exit.gratuityAmount || 0;
+        document.getElementById("inputShortfall").value = exit.noticeShortfallDeduction || 0;
+
+        calculateNetSettlement();
+        document.getElementById("settlementModal").style.display = "flex";
+    }
+
+    function closeSettlementModal() {
+        document.getElementById("settlementModal").style.display = "none";
+    }
+
+    function calculateNetSettlement() {
+        const salary = parseFloat(document.getElementById("inputPendingSalary").value) || 0;
+        const leave = parseFloat(document.getElementById("inputLeaveEncash").value) || 0;
+        const gratuity = parseFloat(document.getElementById("inputGratuity").value) || 0;
+        const shortfall = parseFloat(document.getElementById("inputShortfall").value) || 0;
+
+        const net = (salary + leave + gratuity) - shortfall;
+        document.getElementById("computedNetFnF").innerText = "₹" + net.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+    }
+
+    async function submitSettlementDetails() {
+        const exitId = document.getElementById("actionExitId").value;
+        const payload = {
+            assetClearanceDone: document.getElementById("checkAssetClearance").checked,
+            noDuesCleared: document.getElementById("checkNoDues").checked,
+            pendingSalaryAmount: parseFloat(document.getElementById("inputPendingSalary").value) || 0,
+            leaveEncashmentAmount: parseFloat(document.getElementById("inputLeaveEncash").value) || 0,
+            gratuityAmount: parseFloat(document.getElementById("inputGratuity").value) || 0,
+            noticeShortfallDeduction: parseFloat(document.getElementById("inputShortfall").value) || 0
+        };
+
+        try {
+            const res = await fetch(`${EXIT_API}/${exitId}/settlement`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                alert(`✅ Separation #EX-${exitId} settlement details updated successfully!`);
+                closeSettlementModal();
+                await fetchAllExits();
+            } else {
+                alert("❌ Failed to update settlement.");
+            }
+        } catch (e) {
+            alert("Error connecting to exit service.");
+        }
+    }
+
+    fetchAllExits();
+</script>
+</body>
+</html>

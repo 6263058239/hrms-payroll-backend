@@ -85,6 +85,7 @@
             border: 1px solid #334155;
             border-radius: 12px;
             padding: 24px;
+            margin-bottom: 24px;
         }
 
         .card-title {
@@ -223,12 +224,16 @@
         .badge-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
         .badge-approved { background: rgba(16, 185, 129, 0.2); color: #34d399; }
         .badge-rejected { background: rgba(225, 29, 72, 0.2); color: #f43f5e; }
+
+        .badge-open { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .badge-inprogress { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+        .badge-resolved { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .badge-closed { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Navbar with Working Logout -->
     <div class="navbar">
         <h1>👤 Employee Self-Service (ESS)</h1>
         <div class="nav-links">
@@ -238,15 +243,13 @@
         </div>
     </div>
 
-    <!-- Logged-in User Identity Display -->
     <div class="user-card">
         <span style="font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Logged In As:</span>
         <h2 id="empNameHeader" style="font-size: 18px; margin-top: 2px; color: #ffffff;">Loading profile...</h2>
     </div>
 
     <div class="grid-2">
-        <!-- 1. Attendance Punch Card -->
-        <div class="card">
+        <div class="card" style="margin-bottom: 0;">
             <div class="card-title">🕒 Real-Time Attendance Punch</div>
             <div class="clock-display" id="liveClock">00:00:00</div>
             <p style="text-align: center; font-size: 12px; color: #94a3b8; margin-bottom: 20px;">
@@ -259,8 +262,7 @@
             </div>
         </div>
 
-        <!-- 2. Apply Leave Card -->
-        <div class="card">
+        <div class="card" style="margin-bottom: 0;">
             <div class="card-title">📝 Apply for Leave</div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
@@ -299,8 +301,7 @@
         </div>
     </div>
 
-    <!-- ⚡ 3. Payslip View & Download Card -->
-    <div class="card" style="margin-bottom: 24px;">
+    <div class="card">
         <div class="card-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <span>📄 Monthly Payslips & Tax Breakup</span>
             <div style="display: flex; gap: 10px; align-items: center;">
@@ -319,7 +320,174 @@
         </p>
     </div>
 
-    <!-- 4. Leave Application History Table -->
+    <div class="card">
+        <div class="card-title">
+            <span>🛡️ My Profile & KYC Documents</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px;">
+            <div style="background: #0f172a; padding: 18px; border-radius: 8px; border: 1px solid #334155;">
+                <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #38bdf8;">Personal Contact & Address</h3>
+
+                <div class="form-group">
+                    <label>Contact Number</label>
+                    <input type="text" id="editContact" class="form-control" placeholder="e.g. 9876543210">
+                </div>
+
+                <div class="form-group">
+                    <label>Current Address</label>
+                    <textarea id="editCurrentAddress" class="form-control" rows="2" placeholder="Enter current residential address..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Permanent Address</label>
+                    <textarea id="editPermanentAddress" class="form-control" rows="2" placeholder="Enter permanent address..."></textarea>
+                </div>
+
+                <button onclick="saveProfileDetails()" style="background: #0284c7; color: #fff; border: none; padding: 9px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; width: 100%;">
+                    💾 Update Profile Info
+                </button>
+            </div>
+
+            <div style="background: #0f172a; padding: 18px; border-radius: 8px; border: 1px solid #334155;">
+                <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #34d399;">KYC Verification Documents</h3>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label style="display: flex; justify-content: space-between;">
+                        <span>Govt. ID Proof (PDF/Image)</span>
+                        <span id="idProofStatus" style="color: #fbbf24; font-size: 11px; font-weight: 700;">Pending</span>
+                    </label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="file" id="idProofFile" class="form-control" style="padding: 6px;" accept=".pdf,.png,.jpg,.jpeg">
+                        <button onclick="uploadDocumentFile('ID_PROOF')" style="background: #059669; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">Upload</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; justify-content: space-between;">
+                        <span>PAN Card Copy (PDF/Image)</span>
+                        <span id="panStatus" style="color: #fbbf24; font-size: 11px; font-weight: 700;">Pending</span>
+                    </label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="file" id="panCardFile" class="form-control" style="padding: 6px;" accept=".pdf,.png,.jpg,.jpeg">
+                        <button onclick="uploadDocumentFile('PAN_CARD')" style="background: #059669; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">Upload</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span>🎫 Helpdesk & Grievance Support (Raise Issue)</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px;">
+            <div class="form-group">
+                <label>Issue Category</label>
+                <select id="ticketCategory" class="form-control">
+                    <option value="PAYROLL_SALARY">Payroll & Salary Discrepancy</option>
+                    <option value="ATTENDANCE_LEAVE">Attendance & Leave Correction</option>
+                    <option value="KYC_PROFILE">KYC / Profile Verification</option>
+                    <option value="GENERAL_QUERY">General Query / Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Priority</label>
+                <select id="ticketPriority" class="form-control">
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM" selected>Medium</option>
+                    <option value="HIGH">High</option>
+                    <option value="URGENT">Urgent (Immediate Salary/Tax Impact)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Subject / Brief Summary</label>
+            <input type="text" id="ticketSubject" class="form-control" placeholder="e.g. August salary cut for approved sick leave">
+        </div>
+
+        <div class="form-group">
+            <label>Detailed Description</label>
+            <textarea id="ticketDescription" class="form-control" rows="3" placeholder="Provide complete context, amounts or calculations..."></textarea>
+        </div>
+
+        <button onclick="submitGrievanceTicket()" style="background: #8b5cf6; color: #ffffff; border: none; padding: 11px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; width: 100%;">
+            🚀 Submit Ticket to HR Helpdesk
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📌 My Raised Tickets & HR Status</div>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Category</th>
+                    <th>Subject</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>HR Resolution Remarks</th>
+                </tr>
+                </thead>
+                <tbody id="myTicketsTableBody">
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #94a3b8; padding: 14px;">Loading tickets...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 🚪 Resignation & Separation Section -->
+    <div class="card">
+        <div class="card-title">
+            <span>🚪 Resignation & Separation Request</span>
+        </div>
+
+        <!-- View when NO active exit -->
+        <div id="applyExitView">
+            <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px;">
+                Initiate formal separation request. Last working day and notice period will be computed automatically.
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div class="form-group">
+                    <label>Separation Type</label>
+                    <select id="exitTypeSelect" class="form-control">
+                        <option value="RESIGNATION">Formal Resignation</option>
+                        <option value="END_OF_CONTRACT">End of Contract</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notice Period Required (Days)</label>
+                    <input type="number" id="noticeDaysInput" value="30" class="form-control">
+                </div>
+            </div>
+            <button onclick="submitResignation()" style="background: #e11d48; color: #fff; border: none; padding: 11px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; width: 100%;">
+                Submit Resignation Request
+            </button>
+        </div>
+
+        <!-- View when ACTIVE exit exists -->
+        <div id="activeExitView" style="display: none; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-weight: 700; color: #fbbf24; font-size: 14px;">⚠️ Separation In Progress</span>
+                <span id="exitStatusBadge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold;">NOTICE PERIOD</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; font-size: 13px;">
+                <div><span style="color: #94a3b8; display: block; margin-bottom: 4px;">Exit Type:</span> <strong id="exitTypeVal" style="color: #38bdf8;">RESIGNATION</strong></div>
+                <div><span style="color: #94a3b8; display: block; margin-bottom: 4px;">Resignation Date:</span> <strong id="resignationDateVal" style="color: #fff;">-</strong></div>
+                <div><span style="color: #94a3b8; display: block; margin-bottom: 4px;">Last Working Day:</span> <strong id="lwdVal" style="color: #38bdf8;">-</strong></div>
+                <div><span style="color: #94a3b8; display: block; margin-bottom: 4px;">Asset Clearance:</span> <span id="assetClearVal" style="font-weight: bold;">-</span></div>
+                <div><span style="color: #94a3b8; display: block; margin-bottom: 4px;">No Dues Cleared:</span> <span id="noDuesVal" style="font-weight: bold;">-</span></div>
+                <div><span style="color: #94a3b8; display: block; margin-bottom: 4px;">F&F Settlement:</span> <strong id="fnfVal" style="color: #34d399; font-size: 15px;">₹0.00</strong></div>
+            </div>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-title">📋 My Leave Applications & Approval Status</div>
         <div class="table-responsive">
@@ -344,77 +512,23 @@
     </div>
 </div>
 
-<!-- 🌟 PRINTABLE PAYSLIP MODAL POPUP -->
 <div id="payslipModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; padding: 20px;">
-    <div style="background: #ffffff; color: #0f172a; width: 100%; max-width: 700px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-
-        <!-- Modal Actions Header -->
+    <div style="background: #ffffff; color: #0f172a; width: 100%; max-width: 700px; border-radius: 12px; overflow: hidden;">
         <div style="background: #0f172a; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: #ffffff; font-weight: 700; font-size: 15px;">Salary Statement Preview</span>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="printPayslipSlip()" style="background: #16a34a; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 600; font-size: 12px; cursor: pointer;">🖨️ Print / Save PDF</button>
-                <button onclick="closePayslipModal()" style="background: #e2e8f0; color: #334155; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">✕ Close</button>
-            </div>
+            <span style="color: #ffffff; font-weight: 700;">Salary Statement Preview</span>
+            <button onclick="closePayslipModal()" style="background: #e2e8f0; color: #334155; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 700; cursor: pointer;">✕ Close</button>
         </div>
-
-        <!-- Printable Slip Content -->
         <div id="printableSlipArea" style="padding: 28px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px;">
-                <div>
-                    <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">KodeKrafters Pvt. Ltd.</h2>
-                    <p style="font-size: 12px; color: #64748b;">Enterprise IT Solutions & HR Services</p>
-                </div>
-                <div style="text-align: right;">
-                    <span style="font-size: 14px; font-weight: 700; color: #0284c7;" id="slipMonthLabel">MONTHLY PAYSLIP</span>
-                    <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Status: <strong style="color: #16a34a;">PAID</strong></p>
-                </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 14px;">
+                <h2 style="font-size: 18px; font-weight: 800;">KodeKrafters Pvt. Ltd.</h2>
+                <span style="font-weight: 700; color: #0284c7;" id="slipMonthLabel">MONTHLY PAYSLIP</span>
             </div>
-
-            <!-- Employee Basic Details Grid -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 12px; margin-bottom: 18px; border: 1px solid #e2e8f0;">
-                <div><strong>Emp ID:</strong> <span id="slipEmpId">-</span></div>
-                <div><strong>Employee Name:</strong> <span id="slipEmpName">-</span></div>
-                <div><strong>Department:</strong> <span id="slipEmpDept">-</span></div>
-                <div><strong>Bank Name:</strong> <span id="slipBankName">-</span></div>
-                <div><strong>A/C No:</strong> <span id="slipAccNo">-</span></div>
-                <div><strong>PAN No:</strong> <span id="slipPanNo">-</span></div>
+            <div style="background: #f8fafc; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 14px;">
+                Emp ID: <strong id="slipEmpId">-</strong> | Name: <strong id="slipEmpName">-</strong> | Dept: <strong id="slipEmpDept">-</strong>
             </div>
-
-            <!-- Breakdown Table -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px;">
-                <!-- Earnings -->
-                <table style="width: 100%; font-size: 12px; border-collapse: collapse; border: 1px solid #e2e8f0;">
-                    <thead>
-                    <tr style="background: #f1f5f9; color: #334155;"><th style="padding: 8px; text-align: left;">Earnings</th><th style="padding: 8px; text-align: right;">Amount (₹)</th></tr>
-                    </thead>
-                    <tbody>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">Basic Salary</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipBasic">0.00</td></tr>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">HRA</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipHra">0.00</td></tr>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">DA</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipDa">0.00</td></tr>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">Special Allowance</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipSpl">0.00</td></tr>
-                    <tr style="font-weight: 700; background: #f8fafc;"><td style="padding: 8px;">Gross Earnings</td><td style="padding: 8px; text-align: right; color: #0284c7;" id="slipGross">0.00</td></tr>
-                    </tbody>
-                </table>
-
-                <!-- Deductions -->
-                <table style="width: 100%; font-size: 12px; border-collapse: collapse; border: 1px solid #e2e8f0;">
-                    <thead>
-                    <tr style="background: #f1f5f9; color: #334155;"><th style="padding: 8px; text-align: left;">Deductions</th><th style="padding: 8px; text-align: right;">Amount (₹)</th></tr>
-                    </thead>
-                    <tbody>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">PF Employee Contrib.</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipPf">0.00</td></tr>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">Professional Tax (PT)</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipPt">0.00</td></tr>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">Income Tax (TDS)</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;" id="slipTds">0.00</td></tr>
-                    <tr><td style="padding: 6px 8px; border-bottom: 1px solid #f1f5f9;">-</td><td style="padding: 6px 8px; text-align: right; border-bottom: 1px solid #f1f5f9;">-</td></tr>
-                    <tr style="font-weight: 700; background: #f8fafc;"><td style="padding: 8px;">Total Deductions</td><td style="padding: 8px; text-align: right; color: #dc2626;" id="slipDeductions">0.00</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Net Take-Home Highlight -->
-            <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 12px 18px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 14px; font-weight: 700; color: #1e3a8a;">NET PAYABLE AMOUNT:</span>
-                <span style="font-size: 20px; font-weight: 800; color: #15803d;" id="slipNetSalary">₹0.00</span>
+            <div style="background: #eff6ff; padding: 12px; border-radius: 6px; display: flex; justify-content: space-between;">
+                <strong>Net Payable:</strong>
+                <strong style="color: #15803d; font-size: 16px;" id="slipNetSalary">₹0.00</strong>
             </div>
         </div>
     </div>
@@ -423,8 +537,9 @@
 <script>
     const ATTENDANCE_API = "http://localhost:8080/api/v1/attendance";
     const LEAVE_API = "http://localhost:8080/api/v1/leaves";
+    const TICKET_API = "http://localhost:8080/api/v1/tickets";
+    const EXIT_API = "http://localhost:8080/api/v1/exits";
 
-    // Read identity directly from Login Session
     let currentEmpId = sessionStorage.getItem('loggedEmpId');
     let currentEmpName = sessionStorage.getItem('loggedEmpName');
     let currentEmpDept = sessionStorage.getItem('loggedEmpDept');
@@ -434,57 +549,48 @@
         window.location.href = 'login.html';
     }
 
-    // Live Clock
     setInterval(() => {
-        const now = new Date();
-        document.getElementById('liveClock').innerText = now.toLocaleTimeString();
+        const liveElem = document.getElementById('liveClock');
+        if (liveElem) {
+            liveElem.innerText = new Date().toLocaleTimeString();
+        }
     }, 1000);
 
     async function initPortal() {
-        if (!currentEmpId) {
+        if (!currentEmpId || currentEmpId === 'null' || currentEmpId === 'undefined') {
             alert("Please sign in first to access your portal.");
             window.location.href = 'login.html';
             return;
         }
 
         const todayStr = new Date().toISOString().split('T')[0];
-        document.getElementById("leaveFrom").value = todayStr;
-        document.getElementById("leaveTo").value = todayStr;
+        if (document.getElementById("leaveFrom")) document.getElementById("leaveFrom").value = todayStr;
+        if (document.getElementById("leaveTo")) document.getElementById("leaveTo").value = todayStr;
 
-        // Set logged-in identity header
         document.getElementById("empNameHeader").innerText = `#${currentEmpId} - ${currentEmpName || 'Employee'} (${currentEmpDept || 'General'})`;
 
-        await loadMyLeaves();
+        try { await loadMyLeaves(); } catch (e) { console.error("Leaves load error", e); }
+        try { await loadProfileInfo(); } catch (e) { console.error("Profile load error", e); }
+        try { await loadMyTickets(); } catch (e) { console.error("Tickets load error", e); }
+        try { await loadEmployeeExitStatus(); } catch (e) { console.error("Exit status load error", e); }
     }
 
     async function submitCheckIn() {
         if (!currentEmpId) return;
         try {
             const res = await fetch(`${ATTENDANCE_API}/check-in/${currentEmpId}`, { method: 'POST' });
-            if (res.ok) {
-                const data = await res.json();
-                alert(`✅ Check-in recorded at ${data.checkInTime}`);
-            } else {
-                alert("❌ Check-in failed or already recorded for today.");
-            }
-        } catch (e) {
-            alert("Punch service error.");
-        }
+            if (res.ok) alert("✅ Check-in recorded!");
+            else alert("❌ Check-in failed or already recorded for today.");
+        } catch (e) { alert("Punch service error."); }
     }
 
     async function submitCheckOut() {
         if (!currentEmpId) return;
         try {
             const res = await fetch(`${ATTENDANCE_API}/check-out/${currentEmpId}`, { method: 'POST' });
-            if (res.ok) {
-                const data = await res.json();
-                alert(`✅ Check-out recorded! Total hours: ${data.totalHoursWorked || 0} hrs`);
-            } else {
-                alert("❌ Check-out failed. Ensure check-in exists for today.");
-            }
-        } catch (e) {
-            alert("Punch service error.");
-        }
+            if (res.ok) alert("✅ Check-out recorded!");
+            else alert("❌ Check-out failed. Ensure check-in exists for today.");
+        } catch (e) { alert("Punch service error."); }
     }
 
     async function submitLeave() {
@@ -496,10 +602,7 @@
             reason: document.getElementById("leaveReason").value
         };
 
-        if (!payload.reason) {
-            alert("Please enter a reason for leave.");
-            return;
-        }
+        if (!payload.reason) return alert("Please enter a reason for leave.");
 
         try {
             const res = await fetch(`${LEAVE_API}/apply/${currentEmpId}`, {
@@ -507,17 +610,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-
             if (res.ok) {
-                alert("✅ Leave request submitted to manager!");
+                alert("✅ Leave request submitted!");
                 document.getElementById("leaveReason").value = "";
                 await loadMyLeaves();
-            } else {
-                alert("❌ Leave application rejected (Overlap check or quota exceeded).");
-            }
-        } catch (e) {
-            alert("Error sending leave request.");
-        }
+            } else alert("❌ Leave application rejected.");
+        } catch (e) { alert("Error sending leave request."); }
     }
 
     async function loadMyLeaves() {
@@ -525,19 +623,15 @@
         const tbody = document.getElementById("myLeavesTableBody");
         try {
             const res = await fetch(`${LEAVE_API}/employee/${currentEmpId}`);
+            if (!res.ok) throw new Error("Status " + res.status);
             const leaves = await res.json();
             tbody.innerHTML = "";
-
             if (!leaves || leaves.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 14px;">No leave requests found for this employee.</td></tr>`;
                 return;
             }
-
             leaves.forEach(l => {
-                let badgeClass = "badge-pending";
-                if (l.approvalStatus === "APPROVED") badgeClass = "badge-approved";
-                if (l.approvalStatus === "REJECTED") badgeClass = "badge-rejected";
-
+                let badgeClass = l.approvalStatus === "APPROVED" ? "badge-approved" : (l.approvalStatus === "REJECTED" ? "badge-rejected" : "badge-pending");
                 tbody.innerHTML += `
                     <tr>
                         <td><strong>${l.leaveType}</strong></td>
@@ -550,112 +644,224 @@
                 `;
             });
         } catch (e) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #f43f5e;">Failed to load leave history.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #f43f5e; padding: 14px;">Failed to load leave records.</td></tr>`;
         }
     }
 
-    // ⚡ PAYSLIP MODAL LOGIC
-    async function viewEmployeePayslip() {
+    async function loadProfileInfo() {
         if (!currentEmpId) return;
+        try {
+            const res = await fetch(`http://localhost:8080/api/v1/employees/${currentEmpId}`);
+            if (!res.ok) return;
+            const emp = await res.json();
+            document.getElementById('editContact').value = emp.contactNumber || '';
+            document.getElementById('editCurrentAddress').value = emp.currentAddress || '';
+            document.getElementById('editPermanentAddress').value = emp.permanentAddress || '';
 
-        const selectedMonth = document.getElementById('payslipMonth').value;
-        document.getElementById('slipMonthLabel').innerText = `PAYSLIP - ${selectedMonth.toUpperCase()}`;
+            document.getElementById('idProofStatus').innerText = emp.idProofFile ? '✅ Uploaded' : 'Pending';
+            document.getElementById('idProofStatus').style.color = emp.idProofFile ? '#34d399' : '#fbbf24';
+
+            document.getElementById('panStatus').innerText = emp.panCardFile ? '✅ Uploaded' : 'Pending';
+            document.getElementById('panStatus').style.color = emp.panCardFile ? '#34d399' : '#fbbf24';
+        } catch (e) { console.error("Profile load error", e); }
+    }
+
+    async function saveProfileDetails() {
+        if (!currentEmpId) return;
+        const payload = {
+            contactNumber: document.getElementById('editContact').value.trim(),
+            currentAddress: document.getElementById('editCurrentAddress').value.trim(),
+            permanentAddress: document.getElementById('editPermanentAddress').value.trim()
+        };
+        try {
+            const res = await fetch(`http://localhost:8080/api/v1/employees/${currentEmpId}/profile`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) alert("✅ Profile updated successfully!");
+            else alert("❌ Failed to update profile.");
+        } catch (e) { alert("Network error updating profile."); }
+    }
+
+    async function uploadDocumentFile(docType) {
+        if (!currentEmpId) return;
+        const fileInput = docType === 'ID_PROOF' ? document.getElementById('idProofFile') : document.getElementById('panCardFile');
+        if (!fileInput.files || fileInput.files.length === 0) return alert("Select file first.");
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        formData.append("docType", docType);
 
         try {
-            // 1. Fetch all salary structures and match current employee
-            const salRes = await fetch('http://localhost:8080/api/v1/salary-structures');
-            if (!salRes.ok) {
-                alert("Salary structure not yet configured for this employee.");
-                return;
-            }
-            const allStructures = await salRes.json();
+            const res = await fetch(`http://localhost:8080/api/v1/employees/${currentEmpId}/upload-document`, {
+                method: 'POST',
+                body: formData
+            });
+            if (res.ok) {
+                alert("✅ Document uploaded successfully!");
+                await loadProfileInfo();
+            } else alert("❌ Upload failed.");
+        } catch (e) { alert("Error uploading file."); }
+    }
 
-            // Match by employee object or direct empId
-            const salData = allStructures.find(s =>
-                (s.employee && String(s.employee.empId) === String(currentEmpId)) ||
-                (s.empId && String(s.empId) === String(currentEmpId))
-            );
+    // ⚡ HELPDESK GRIEVANCE SUBMIT
+    async function submitGrievanceTicket() {
+        if (!currentEmpId) return;
 
-            if (!salData) {
-                alert("Salary structure not yet configured for this employee.");
-                return;
-            }
+        const subject = document.getElementById("ticketSubject").value.trim();
+        const description = document.getElementById("ticketDescription").value.trim();
 
-            // 2. Fetch Employee Profile details
-            const empRes = await fetch(`http://localhost:8080/api/v1/employees/${currentEmpId}`);
-            const empData = empRes.ok ? await empRes.json() : {};
-
-            // 3. Map details to Modal fields
-            document.getElementById('slipEmpId').innerText = `#${currentEmpId}`;
-            document.getElementById('slipEmpName').innerText = empData.employeeName || currentEmpName || '-';
-            document.getElementById('slipEmpDept').innerText = empData.department || currentEmpDept || '-';
-            document.getElementById('slipBankName').innerText = empData.bankName || 'State Bank of India';
-            document.getElementById('slipAccNo').innerText = empData.accountNumber || 'XXXXXXXXXX';
-            document.getElementById('slipPanNo').innerText = empData.panNumber || '-';
-
-            const basic = parseFloat(salData.basicSalary) || 0;
-            const hra = parseFloat(salData.hra) || 0;
-            const da = parseFloat(salData.da) || 0;
-            const spl = parseFloat(salData.specialAllowance) || 0;
-            const gross = basic + hra + da + spl;
-
-            const pf = parseFloat(salData.pfEmployeeContribution) || 0;
-            const pt = parseFloat(salData.professionalTax) || 0;
-            const tds = parseFloat(salData.tdsIncomeTax) || 0;
-            const totalDeductions = pf + pt + tds;
-            const netSalary = gross - totalDeductions;
-
-            document.getElementById('slipBasic').innerText = basic.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById('slipHra').innerText = hra.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById('slipDa').innerText = da.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById('slipSpl').innerText = spl.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById('slipGross').innerText = gross.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-
-            document.getElementById('slipPf').innerText = pf.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById('slipPt').innerText = pt.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById('slipTds').innerText = tds.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-            document.getElementById('slipDeductions').innerText = totalDeductions.toLocaleString('en-IN', { minimumFractionDigits: 2 });
-
-            document.getElementById('slipNetSalary').innerText = `₹${netSalary.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-
-            // Open Modal
-            document.getElementById('payslipModal').style.display = 'flex';
-
-        } catch (e) {
-            console.error("Payslip loading error", e);
-            alert("Error generating payslip preview.");
+        if (!subject || !description) {
+            alert("Please enter both ticket subject and detailed description.");
+            return;
         }
+
+        const payload = {
+            category: document.getElementById("ticketCategory").value,
+            priority: document.getElementById("ticketPriority").value,
+            subject: subject,
+            description: description
+        };
+
+        try {
+            const res = await fetch(`${TICKET_API}/raise/${currentEmpId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                alert(`✅ Ticket #${data.ticketId} submitted to HR Support!`);
+                document.getElementById("ticketSubject").value = "";
+                document.getElementById("ticketDescription").value = "";
+                await loadMyTickets();
+            } else {
+                const err = await res.json();
+                alert("❌ Failed to submit ticket: " + (err.error || "Server error"));
+            }
+        } catch (e) {
+            alert("Helpdesk service unreachable.");
+        }
+    }
+
+    // ⚡ LOAD MY TICKETS
+    async function loadMyTickets() {
+        if (!currentEmpId) return;
+        const tbody = document.getElementById("myTicketsTableBody");
+
+        try {
+            const res = await fetch(`${TICKET_API}/my-tickets/${currentEmpId}`);
+            const tickets = await res.json();
+
+            tbody.innerHTML = "";
+            if (!tickets || tickets.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 14px;">No grievance tickets raised yet.</td></tr>`;
+                return;
+            }
+
+            tickets.forEach(t => {
+                let badgeClass = "badge-open";
+                if (t.status === "IN_PROGRESS") badgeClass = "badge-inprogress";
+                if (t.status === "RESOLVED") badgeClass = "badge-resolved";
+                if (t.status === "CLOSED") badgeClass = "badge-closed";
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>#TK-${t.ticketId}</strong></td>
+                        <td style="color: #38bdf8; font-weight: 600;">${t.ticketCategory || t.category || 'GENERAL'}</td>
+                        <td>${t.subject || '-'}</td>
+                        <td><strong>${t.priority || 'MEDIUM'}</strong></td>
+                        <td><span class="badge ${badgeClass}">${t.status}</span></td>
+                        <td style="color: ${t.resolutionRemarks ? '#34d399' : '#94a3b8'};">
+                            ${t.resolutionRemarks || 'Pending HR review...'}
+                        </td>
+                    </tr>
+                `;
+            });
+        } catch (e) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #f43f5e; padding: 14px;">Failed to load ticket history.</td></tr>`;
+        }
+    }
+
+    // ⚡ RESIGNATION & EXIT MANAGEMENT LOGIC
+    async function loadEmployeeExitStatus() {
+        if (!currentEmpId) return;
+        try {
+            const res = await fetch(`${EXIT_API}/my-exit/${currentEmpId}`);
+            const data = await res.json();
+
+            if (data && data.id) {
+                document.getElementById("applyExitView").style.display = "none";
+                document.getElementById("activeExitView").style.display = "block";
+
+                document.getElementById("exitTypeVal").innerText = data.exitType || "RESIGNATION";
+                document.getElementById("resignationDateVal").innerText = data.resignationDate || "-";
+                document.getElementById("lwdVal").innerText = data.lastWorkingDay || "-";
+
+                document.getElementById("assetClearVal").innerHTML = data.assetClearanceDone
+                    ? `<span style="color: #34d399;">✅ Cleared</span>`
+                    : `<span style="color: #fbbf24;">⏳ Pending</span>`;
+
+                document.getElementById("noDuesVal").innerHTML = data.noDuesCleared
+                    ? `<span style="color: #34d399;">✅ Cleared</span>`
+                    : `<span style="color: #fbbf24;">⏳ Pending</span>`;
+
+                const settlementAmt = data.finalSettlementAmount !== null && data.finalSettlementAmount !== undefined
+                    ? Number(data.finalSettlementAmount).toLocaleString('en-IN', { minimumFractionDigits: 2 })
+                    : "0.00";
+                document.getElementById("fnfVal").innerText = "₹" + settlementAmt;
+            } else {
+                document.getElementById("applyExitView").style.display = "block";
+                document.getElementById("activeExitView").style.display = "none";
+            }
+        } catch (e) {
+            console.error("Could not fetch exit status:", e);
+        }
+    }
+
+    async function submitResignation() {
+        if (!currentEmpId) return;
+
+        if (!confirm("Are you sure you want to submit your formal resignation?")) return;
+
+        const payload = {
+            exitType: document.getElementById("exitTypeSelect").value,
+            noticeDays: document.getElementById("noticeDaysInput").value
+        };
+
+        try {
+            const res = await fetch(`${EXIT_API}/apply/${currentEmpId}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                alert("✅ Resignation submitted! Expected Last Working Day: " + data.lastWorkingDay);
+                await loadEmployeeExitStatus();
+            } else {
+                alert("❌ " + (data.error || "Failed to submit resignation"));
+            }
+        } catch (e) {
+            alert("Server error while submitting resignation.");
+        }
+    }
+
+    async function viewEmployeePayslip() {
+        document.getElementById('slipEmpId').innerText = `#${currentEmpId}`;
+        document.getElementById('slipEmpName').innerText = currentEmpName || '-';
+        document.getElementById('slipEmpDept').innerText = currentEmpDept || '-';
+        document.getElementById('payslipModal').style.display = 'flex';
     }
 
     function closePayslipModal() {
         document.getElementById('payslipModal').style.display = 'none';
     }
 
-    function printPayslipSlip() {
-        const printContents = document.getElementById('printableSlipArea').innerHTML;
-        const printWindow = window.open('', '', 'height=700,width=800');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Employee Payslip</title>
-                    <style>
-                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; color: #0f172a; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                        th, td { border: 1px solid #cbd5e1; padding: 8px; font-size: 13px; }
-                        th { background-color: #f1f5f9; }
-                    </style>
-                </head>
-                <body>${printContents}</body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-        setTimeout(() => {
-            printWindow.print();
-            printWindow.close();
-        }, 300);
-    }
-
+    // Initialize portal on script load
     initPortal();
 </script>
 </body>

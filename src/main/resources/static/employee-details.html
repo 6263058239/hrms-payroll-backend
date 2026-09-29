@@ -20,6 +20,66 @@
             padding: 30px 20px;
         }
 
+        /* Unified Admin Navbar */
+        .admin-navbar {
+            max-width: 1250px;
+            margin: 0 auto 24px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .admin-nav-brand {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover {
+            color: #f8fafc;
+            background-color: #334155;
+        }
+
+        .nav-item.active {
+            color: #38bdf8;
+            background-color: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        .nav-item.btn-portal {
+            background-color: #059669;
+            color: #ffffff;
+        }
+
+        .nav-item.btn-portal:hover {
+            background-color: #047857;
+        }
+
         /* Container Card */
         .container {
             max-width: 1250px;
@@ -329,9 +389,80 @@
             cursor: pointer;
         }
         .btn-reject:hover { background-color: #be123c; }
+
+        /* Sleek Dark-Mode Toast Notification */
+        #toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            min-width: 280px;
+            max-width: 380px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            color: #f8fafc;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+            border: 1px solid transparent;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            background-color: #064e3b;
+            border-color: #059669;
+            color: #a7f3d0;
+        }
+
+        .toast-error {
+            background-color: #7f1d1d;
+            border-color: #dc2626;
+            color: #fecaca;
+        }
+
+        .toast-info {
+            background-color: #0c4a6e;
+            border-color: #0284c7;
+            color: #bae6fd;
+        }
     </style>
 </head>
 <body>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Unified Admin Navbar -->
+<nav class="admin-navbar">
+    <div class="admin-nav-brand">
+        ⚡ <span>HRMS Admin Console</span>
+    </div>
+    <div class="admin-nav-links">
+        <a href="employee-details.html" class="nav-item active">👥 Directory</a>
+        <a href="salary-structure.html" class="nav-item">💰 Payroll & CTC</a>
+        <a href="helpdesk-admin.html" class="nav-item">🎫 Helpdesk Queue</a>
+        <a href="exit-admin.html" class="nav-item">🚪 Offboarding</a>
+        <a href="employee-portal.html" target="_blank" class="nav-item btn-portal">👤 ESS Portal ↗</a>
+    </div>
+</nav>
 
 <div class="container">
     <div class="header">
@@ -352,7 +483,7 @@
         </div>
     </div>
 
-    <!-- ⚡ Quick Attendance & Headcount Summary Cards -->
+    <!-- Quick Attendance & Headcount Summary Cards -->
     <div class="metrics-grid">
         <div class="metric-card">
             <span class="metric-label">Total Headcount</span>
@@ -371,8 +502,7 @@
         </div>
     </div>
 
-    <!-- ⚡ Search & Filter Controls -->
-    <!-- ⚡ Search & Filter Controls -->
+    <!-- Search & Filter Controls -->
     <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
         <input type="search" id="searchInput" onkeyup="filterEmployees()"
                placeholder="🔍 Search by Name, Email, or EMP ID..."
@@ -415,7 +545,7 @@
     </div>
 </div>
 
-<!-- ⚡ Manager Leave Approvals Modal -->
+<!-- Manager Leave Approvals Modal -->
 <div id="approvalsModal" class="modal-overlay">
     <div class="modal-content modal-content-lg">
         <div class="modal-header">
@@ -480,7 +610,6 @@
             <label>Designation</label>
             <input type="text" id="editDesig" class="form-control">
         </div>
-        <!-- ⚡ Optional Reset Password Field -->
         <div class="form-group">
             <label>Reset Password <span style="font-size: 11px; color: #94a3b8;">(Optional - leave blank to keep unchanged)</span></label>
             <input type="password" id="editPassword" placeholder="Enter new password..." class="form-control">
@@ -499,6 +628,27 @@
 
     let loadedEmployees = [];
 
+    // Toast Notification Utility
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+
+        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+        toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+
+        container.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 50);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3500);
+    }
+
     // 1. Load All Employees to Directory
     async function fetchEmployees() {
         try {
@@ -512,7 +662,6 @@
             document.getElementById("totalEmpCount").innerText = loadedEmployees.length || 0;
             document.getElementById("presentCount").innerText = loadedEmployees.length > 0 ? loadedEmployees.length : "0";
 
-            // Dynamic Pending Leave Count
             await refreshPendingLeaveCount();
 
             if (!loadedEmployees || loadedEmployees.length === 0) {
@@ -520,7 +669,6 @@
                 return;
             }
 
-            // Clean Table Rows (Only Edit & Delete Actions)
             loadedEmployees.forEach(emp => {
                 tbody.innerHTML += `
                     <tr>
@@ -619,14 +767,14 @@
             });
 
             if (res.ok) {
-                alert(`✅ Leave request successfully ${action}d!`);
+                showToast(`Leave request successfully ${action}d!`, 'success');
                 await loadPendingLeavesList();
                 await refreshPendingLeaveCount();
             } else {
-                alert(`❌ Action failed for leave #${leaveId}`);
+                showToast(`Action failed for leave #${leaveId}`, 'error');
             }
         } catch (e) {
-            alert("Error processing leave action.");
+            showToast("Error processing leave action.", 'error');
         }
     }
 
@@ -636,13 +784,13 @@
             try {
                 const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
                 if (res.ok) {
-                    alert("Employee deleted successfully!");
+                    showToast("Employee deleted successfully!", "success");
                     fetchEmployees();
                 } else {
-                    alert("Failed to delete employee.");
+                    showToast("Failed to delete employee.", "error");
                 }
             } catch (err) {
-                alert("Error executing delete request.");
+                showToast("Error executing delete request.", "error");
             }
         }
     }
@@ -655,7 +803,7 @@
         document.getElementById("editPhone").value = phone;
         document.getElementById("editDept").value = dept;
         document.getElementById("editDesig").value = desig;
-        document.getElementById("editPassword").value = ""; // Reset input
+        document.getElementById("editPassword").value = "";
         document.getElementById("editModal").style.display = "flex";
     }
 
@@ -675,7 +823,6 @@
             designation: document.getElementById("editDesig").value
         };
 
-        // Agar user ne password type kiya hai toh hi payload me jayega
         if (newPassword.length > 0) {
             updatedData.password = newPassword;
         }
@@ -688,14 +835,14 @@
             });
 
             if (res.ok) {
-                alert("Employee details updated in DB!");
+                showToast("Employee details updated in DB!", "success");
                 closeModal();
                 fetchEmployees();
             } else {
-                alert("Failed to update employee details.");
+                showToast("Failed to update employee details.", "error");
             }
         } catch (err) {
-            alert("Error sending update request.");
+            showToast("Error sending update request.", "error");
         }
     }
 
@@ -721,11 +868,14 @@
             }
         });
     }
-setTimeout(() => {
+
+    setTimeout(() => {
         const searchBox = document.getElementById("searchInput");
         if (searchBox) searchBox.value = "";
     }, 100);
+
     fetchEmployees();
 </script>
+
 </body>
 </html>

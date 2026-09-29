@@ -105,6 +105,13 @@ public class Employee {
     @Column(name = "tax_id_number")
     private String taxIdNumber;
 
+    // ⚡ KYC Document File Paths
+    @Column(name = "id_proof_file")
+    private String idProofFile;
+
+    @Column(name = "pan_card_file")
+    private String panCardFile;
+
     // ==========================================
     // 4. BANK DETAILS
     // ==========================================
@@ -163,7 +170,9 @@ public class Employee {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MonthlyPayroll> monthlyPayrollRecords;
 
-
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HelpdeskTicket> helpdeskTickets;
     // ==========================================
     // INNER ENUM FOR LIFECYCLE WORKFLOW
     // ==========================================

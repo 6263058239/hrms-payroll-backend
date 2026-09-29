@@ -197,10 +197,73 @@
         .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
         .btn-cancel { background-color: #475569; color: #ffffff; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; }
         .btn-save { background-color: #10b981; color: #ffffff; padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; }
+
+        /* Unified Admin Navbar */
+.admin-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    padding: 12px 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+.admin-nav-brand {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.admin-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.nav-item {
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.nav-item:hover {
+    color: #f8fafc;
+    background-color: #334155;
+}
+.nav-item.active {
+    color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.12);
+    border-color: rgba(56, 189, 248, 0.3);
+}
+.nav-item.btn-portal {
+    background-color: #059669;
+    color: #ffffff;
+}
+.nav-item.btn-portal:hover {
+    background-color: #047857;
+}
     </style>
 </head>
 <body>
 
+<nav class="admin-navbar">
+    <div class="admin-nav-brand">
+        ⚡ <span>HRMS Admin Console</span>
+    </div>
+    <div class="admin-nav-links">
+        <a href="employee-details.html" class="nav-item">👥 Directory</a>
+        <a href="salary-structure.html" class="nav-item active">💰 Payroll & CTC</a>
+        <a href="helpdesk-admin.html" class="nav-item">🎫 Helpdesk Queue</a>
+        <a href="exit-admin.html" class="nav-item">🚪 Offboarding</a>
+        <a href="employee-portal.html" target="_blank" class="nav-item btn-portal">👤 ESS Portal ↗</a>
+    </div>
+</nav>
 <div class="container">
     <div class="header">
         <div>
